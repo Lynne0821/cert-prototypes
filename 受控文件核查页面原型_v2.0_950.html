@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>受控文件核查 - v2.0</title>
+  <style>
+    :root {
+      --bg: #080a12;
+      --panel: #0d101c;
+      --line: #242839;
+      --line-2: #30364b;
+      --text: #f1f3fb;
+      --muted: #8b93aa;
+      --amber: #f5a300;
+      --teal: #28c7b7;
+      --blue: #3f8cff;
+      --green: #35c982;
+      --red: #f06d7c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Manrope", "Noto Sans SC", "PingFang SC", sans-serif;
+    }
+
+    .app {
+      width: 1920px;
+      height: 950px;
+      margin: 0 auto;
+      background: #090c16;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 54px;
+      display: grid;
+      grid-template-columns: 220px 1fr 140px;
+      align-items: center;
+      border-bottom: 1px solid #1f2330;
+      background: #090a0d;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 16px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: var(--amber);
+      color: #17120a;
+      font-size: 13px;
+    }
+
+    .menu {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu-item {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 8px;
+      color: #a1a7b6;
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+
+    .menu-item.active {
+      color: var(--amber);
+      background: rgba(245, 163, 0, .12);
+      border-color: rgba(245, 163, 0, .25);
+    }
+
+    .top-actions {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      padding-right: 18px;
+      color: #8f96a8;
+      border-left: 1px solid #1f2330;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #7a61ff;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      height: 896px;
+    }
+
+    .sidebar {
+      border-right: 1px solid #202536;
+      background: #0b0e19;
+      padding: 14px 12px;
+      overflow: hidden;
+    }
+
+    .btn {
+      height: 36px;
+      border: 1px solid var(--line-2);
+      border-radius: 8px;
+      background: #151927;
+      color: var(--text);
+      padding: 0 13px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: inherit;
+    }
+
+    .btn.primary {
+      border-color: var(--amber);
+      background: var(--amber);
+      color: #17120a;
+      font-weight: 700;
+    }
+
+    .btn.ghost { background: #0f1320; color: #c6cedd; }
+    .btn.icon { width: 36px; padding: 0; }
+
+    .search {
+      width: 100%;
+      height: 34px;
+      margin-top: 10px;
+      border: 1px solid #252a3a;
+      border-radius: 8px;
+      background: #111522;
+      color: var(--text);
+      padding: 0 10px;
+      outline: none;
+      font-size: 12px;
+    }
+
+    .date-title {
+      margin: 16px 0 8px;
+      color: #6f7688;
+      font-size: 12px;
+    }
+
+    .record {
+      min-height: 54px;
+      border-radius: 8px;
+      padding: 9px 10px;
+      margin-bottom: 8px;
+      color: #cfd6e6;
+      font-size: 13px;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .record.active {
+      background: rgba(245, 163, 0, .13);
+      border-color: rgba(245, 163, 0, .18);
+    }
+
+    .record .sub {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: #828a9c;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .badge {
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid #2a3147;
+      background: #111624;
+      display: inline-flex;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .badge.ok { color: var(--green); border-color: rgba(53,201,130,.35); background: rgba(53,201,130,.08); }
+    .badge.warn { color: var(--amber); border-color: rgba(245,163,0,.35); background: rgba(245,163,0,.08); }
+    .badge.danger { color: var(--red); border-color: rgba(240,109,124,.35); background: rgba(240,109,124,.08); }
+    .badge.blue { color: #8bb9ff; border-color: rgba(63,140,255,.35); background: rgba(63,140,255,.08); }
+
+    .main {
+      display: grid;
+      grid-template-rows: 58px 1fr;
+      min-width: 0;
+      background: #0c0f1b;
+    }
+
+    .task-bar {
+      padding: 10px 22px;
+      border-bottom: 1px solid #202536;
+      background: #101321;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .task-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 12px rgba(40,199,183,.45);
+    }
+
+    .source-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #8f98ad;
+      font-size: 12px;
+    }
+
+    .content {
+      padding: 16px 22px;
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .panel {
+      border: 1px solid #252b3d;
+      border-radius: 8px;
+      background: #0d111d;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .panel-head {
+      height: 42px;
+      border-bottom: 1px solid #252b3d;
+      background: #141827;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-size: 13px;
+    }
+
+    .panel-body {
+      padding: 14px;
+      height: calc(100% - 42px);
+      overflow: auto;
+    }
+
+    .upload-box {
+      border: 1px dashed #3a4259;
+      border-radius: 10px;
+      background: #0b101c;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .upload-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      margin: 0 auto 12px;
+      display: grid;
+      place-items: center;
+      color: #17120a;
+      background: var(--amber);
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .upload-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .upload-box p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 0 0 12px;
+    }
+
+    .form-field { margin-bottom: 12px; }
+
+    .label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 0 0 6px;
+    }
+
+    .input, .select {
+      width: 100%;
+      height: 36px;
+      border: 1px solid #2a3147;
+      border-radius: 8px;
+      background: #0b111d;
+      color: var(--text);
+      padding: 0 10px;
+      outline: none;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    .input:focus, .select:focus { border-color: rgba(245, 163, 0, .55); }
+
+    .select[multiple] {
+      height: 86px;
+      padding: 7px 10px;
+    }
+
+    .select[multiple] option {
+      padding: 4px 0;
+    }
+
+    .check-list {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .check-item {
+      border: 1px solid #273047;
+      border-radius: 8px;
+      background: #111624;
+      padding: 10px;
+      display: flex;
+      gap: 8px;
+      font-size: 13px;
+      color: #dce4f5;
+    }
+
+    .check-item input { accent-color: var(--amber); }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .summary-card {
+      border: 1px solid #273047;
+      border-radius: 8px;
+      background: #111624;
+      padding: 10px;
+      min-height: 68px;
+    }
+
+    .summary-card span {
+      display: block;
+      color: #818ba1;
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .summary-card strong {
+      color: #f2f5fb;
+      font-size: 20px;
+    }
+
+    .preview-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .keyword-box {
+      height: 32px;
+      border: 1px solid #2a3147;
+      border-radius: 8px;
+      background: #0b111d;
+      color: var(--text);
+      padding: 0 10px;
+      outline: none;
+      font-size: 12px;
+      width: 220px;
+    }
+
+    .doc-preview {
+      height: 100%;
+      border: 1px solid #273047;
+      border-radius: 8px;
+      background: #090d18;
+      overflow: auto;
+      padding: 14px;
+    }
+
+    .page {
+      width: 620px;
+      min-height: 720px;
+      margin: 0 auto 16px;
+      background: #f5f6f8;
+      color: #1d2430;
+      border-radius: 4px;
+      padding: 38px 44px;
+      box-shadow: 0 18px 38px rgba(0,0,0,.25);
+      font-family: Arial, "Noto Sans SC", sans-serif;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .page::before {
+      content: attr(data-page);
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      color: #7b8493;
+      font-size: 12px;
+    }
+
+    .page h3 {
+      margin: 0 0 18px;
+      font-size: 20px;
+      color: #151b26;
+    }
+
+    .page p {
+      font-size: 14px;
+      margin: 0 0 12px;
+    }
+
+    mark.issue {
+      border-radius: 4px;
+      padding: 1px 3px;
+      color: inherit;
+      background: rgba(245,163,0,.32);
+      outline: 2px solid transparent;
+      transition: outline-color .2s, background .2s;
+    }
+
+    mark.issue.active {
+      background: rgba(240,109,124,.34);
+      outline-color: rgba(240,109,124,.85);
+    }
+
+    .result-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tab {
+      height: 30px;
+      padding: 0 11px;
+      border: 1px solid #2a3147;
+      border-radius: 8px;
+      background: #111624;
+      color: #9ba5ba;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      color: #f7fbff;
+      border-color: rgba(245,163,0,.55);
+      background: rgba(245,163,0,.12);
+    }
+
+    .issue-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .issue-card {
+      border: 1px solid #273047;
+      border-left: 3px solid var(--amber);
+      border-radius: 8px;
+      background: #111624;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .issue-card.danger { border-left-color: var(--red); }
+    .issue-card.blue { border-left-color: var(--blue); }
+    .issue-card.ok { border-left-color: var(--green); }
+    .issue-card.active { border-color: rgba(245,163,0,.65); background: rgba(245,163,0,.08); }
+
+    .issue-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .issue-meta {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 6px;
+      font-size: 12px;
+      line-height: 1.55;
+      margin-bottom: 7px;
+    }
+
+    .issue-meta .key { color: #8c96aa; }
+    .issue-meta .val { color: #dfe6f5; }
+
+    .issue-card p {
+      color: #cbd4e6;
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .download-link {
+      color: var(--red);
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .download-link:hover { text-decoration: underline; }
+
+    .template-preview {
+      border: 1px solid #273047;
+      border-radius: 8px;
+      background: #0b101c;
+      overflow: hidden;
+    }
+
+    .template-row {
+      display: grid;
+      grid-template-columns: 82px 84px 82px 1fr 1fr;
+      border-bottom: 1px solid #232a3d;
+      min-height: 36px;
+    }
+
+    .template-row:last-child { border-bottom: 0; }
+
+    .template-cell {
+      padding: 9px 10px;
+      border-right: 1px solid #232a3d;
+      color: #cbd4e6;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .template-cell:last-child { border-right: 0; }
+
+    .template-row.head .template-cell {
+      color: #f1f3fb;
+      background: #151928;
+      font-weight: 700;
+    }
+
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .modal-mask.open { display: flex; }
+
+    .modal {
+      width: 620px;
+      border: 1px solid #30364a;
+      border-radius: 10px;
+      background: #111522;
+      box-shadow: 0 24px 70px rgba(0,0,0,.55);
+      overflow: hidden;
+    }
+
+    .modal-head {
+      height: 52px;
+      border-bottom: 1px solid #252b3d;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #151928;
+      font-weight: 700;
+    }
+
+    .modal-body { padding: 16px; }
+
+    .modal-actions {
+      height: 56px;
+      border-top: 1px solid #252b3d;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      background: #0f1320;
+    }
+
+    .loading-mask {
+      position: fixed;
+      inset: 54px 0 0 260px;
+      background: rgba(8,10,18,.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .loading-mask.open { display: flex; }
+
+    .loading-card {
+      width: 420px;
+      border: 1px solid #30364a;
+      border-radius: 12px;
+      background: #111522;
+      box-shadow: 0 24px 70px rgba(0,0,0,.55);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .loader {
+      width: 46px;
+      height: 46px;
+      border: 4px solid #273047;
+      border-top-color: var(--amber);
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1920px) {
+      body { overflow-x: auto; }
+      .app { margin: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><div class="brand-icon">AI</div><span>智岩 AI</span></div>
+      <nav class="menu">
+        <span class="menu-item">企业全局总览</span>
+        <a class="menu-item" href="./认证说明书Brief操作页_1920.html">说明书Breif 生成</a>
+        <a class="menu-item active" href="./受控文件核查页面原型_v2.0_950.html">受控文件核查</a>
+        <a class="menu-item" href="./草稿报告智能审核原型_v2.0_950.html">报告智能审核</a>
+        <a class="menu-item" href="./认证法规召回监控_950.html">法规召回监控</a>
+        <a class="menu-item" href="./CDF清单页面原型.html">CDF清单</a>
+      </nav>
+      <div class="top-actions"><span>☼</span><span>↗</span><div class="avatar">王</div></div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar">
+        <button class="btn primary" id="newCheckBtn" style="width:100%;">+ 新增核查记录</button>
+        <input class="search" placeholder="搜索文件名 / 型号..." />
+        <div class="date-title">今天</div>
+        <div class="record active" data-name="H7087_User Manual_EN.pdf" data-status="发现 5 个问题" data-score="82" data-total="5" data-grammar="2" data-translation="1" data-regulation="2">
+          H7087_User Manual_EN.pdf
+          <span class="sub"><span>10:42</span><span class="badge warn">5 个问题</span></span>
+        </div>
+        <div class="record" data-name="H3500_QSG_FR.docx" data-status="发现 2 个问题" data-score="91" data-total="2" data-grammar="1" data-translation="1" data-regulation="0">
+          H3500_QSG_FR.docx
+          <span class="sub"><span>09:18</span><span class="badge warn">2 个问题</span></span>
+        </div>
+        <div class="date-title">本周</div>
+        <div class="record" data-name="A14C0_Safety Sheet.pdf" data-status="通过" data-score="98" data-total="0" data-grammar="0" data-translation="0" data-regulation="0">
+          A14C0_Safety Sheet.pdf
+          <span class="sub"><span>周二</span><span class="badge ok">通过</span></span>
+        </div>
+        <div class="record" data-name="H7073_Manual_DE.docx" data-status="发现 4 个问题" data-score="86" data-total="4" data-grammar="1" data-translation="2" data-regulation="1">
+          H7073_Manual_DE.docx
+          <span class="sub"><span>周一</span><span class="badge warn">4 个问题</span></span>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section class="task-bar">
+          <div>
+            <div class="task-title"><span class="dot"></span><span id="taskTitle">H7087_User Manual_EN.pdf</span></div>
+            <span class="badge warn" id="statusBadge" style="display:none;">发现 5 个问题</span>
+          </div>
+          <div style="display:flex;gap:8px;"><button class="btn ghost" id="exportIssuesBtn">导出问题清单</button><button class="btn primary" id="startCheckBtn">更新核查文件</button></div>
+        </section>
+
+        <section class="content">
+          <section class="panel">
+            <div class="panel-head"><strong>文件预览</strong><span style="color:var(--muted);font-size:12px;">点击问题后高亮原文</span></div>
+            <div class="panel-body">
+              <div class="doc-preview" id="docPreview">
+                <article class="page" data-page="P03">
+                  <h3>At a Glance</h3>
+                  <p>The controller and adapter are included in the package. Please make sure all accessories are complete before installation.</p>
+                  <p>The light source is not user replaceable. For more details, please refer to the safety information section.</p>
+                </article>
+                <article class="page" data-page="P06">
+                  <h3>Specifications</h3>
+                  <p>Model: H7087</p>
+                  <p><mark class="issue" data-key="Power Input">Power Input</mark>: 100-240VAC 50/60Hz</p>
+                  <p>Rated Power: 36W</p>
+                  <p>Use the product <mark class="issue" data-key="indoor">indoor</mark> and avoid direct rain exposure.</p>
+                </article>
+                <article class="page" data-page="P12">
+                  <h3>Compliance Information</h3>
+                  <p>This device complies with Part 15 of the FCC Rules. Operation is subject to the following two conditions.</p>
+                  <p><mark class="issue" data-key="ISED">ISED</mark> statement is required for Canada market.</p>
+                  <p><mark class="issue" data-key="EU Declaration">EU Declaration</mark> and UK representative information should be included for EU / UK sales.</p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <aside class="panel">
+            <div class="panel-head"><strong>核查结果</strong><span style="color:var(--muted);font-size:12px;">点击问题定位</span></div>
+            <div class="panel-body">
+              <div class="summary-grid">
+                <div class="summary-card"><span>问题总数</span><strong id="totalText">5</strong><div class="download-link" id="downloadOriginalBtn">下载核查原文件</div></div>
+              </div>
+              <div class="result-tabs">
+                <span class="tab active" data-filter="all">全部</span>
+                <span class="tab" data-filter="grammar">语法拼写</span>
+                <span class="tab" data-filter="translation">翻译</span>
+                <span class="tab" data-filter="regulation">法规遗漏</span>
+              </div>
+              <div class="issue-list" id="issueList">
+                <article class="issue-card danger" data-type="grammar" data-page="P06" data-keyword="indoor">
+                  <div class="issue-title"><span>语法 / 用词不当</span><span class="badge danger">高</span></div>
+                  <div class="issue-meta"><span class="key">定位</span><span class="val">P06 · 关键字 indoor</span><span class="key">建议</span><span class="val">改为 indoors 或 indoor use only，并确认是否适用于户外产品。</span></div>
+                  <p>句子 “Use the product indoor” 存在语法问题，也可能与户外照明场景冲突。</p>
+                </article>
+                <article class="issue-card blue" data-type="translation" data-page="P06" data-keyword="Power Input">
+                  <div class="issue-title"><span>翻译 / 参数一致性</span><span class="badge warn">中</span></div>
+                  <div class="issue-meta"><span class="key">定位</span><span class="val">P06 · 关键字 Power Input</span><span class="key">建议</span><span class="val">与 PIM 参数核对，若目标区域为 EU / UK，建议改为 200-240VAC。</span></div>
+                  <p>Power Input 与产品信息库中的电源输入范围不一致，需确认是否沿用了旧版说明书参数。</p>
+                </article>
+                <article class="issue-card" data-type="regulation" data-page="P12" data-keyword="ISED">
+                  <div class="issue-title"><span>法规遗漏 / 加拿大声明</span><span class="badge danger">高</span></div>
+                  <div class="issue-meta"><span class="key">定位</span><span class="val">P12 · 关键字 ISED</span><span class="key">建议</span><span class="val">补充 ISED 声明、HVIN / PMN 等字段。</span></div>
+                  <p>销售区域包含 CA，但当前文件仅出现占位说明，缺少完整加拿大合规声明。</p>
+                </article>
+                <article class="issue-card" data-type="regulation" data-page="P12" data-keyword="EU Declaration">
+                  <div class="issue-title"><span>法规遗漏 / EU UK 信息</span><span class="badge warn">中</span></div>
+                  <div class="issue-meta"><span class="key">定位</span><span class="val">P12 · 关键字 EU Declaration</span><span class="key">建议</span><span class="val">补充欧代、英代、符合性声明入口和网络安全更新周期。</span></div>
+                  <p>面向 EU / UK 销售时，合规信息区域需要补齐区域代表与声明入口。</p>
+                </article>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="checkModal">
+    <div class="modal">
+      <div class="modal-head">
+        <span>新增核查记录</span>
+        <button class="btn icon" id="closeModalBtn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="upload-box">
+          <div class="upload-icon">PDF</div>
+          <strong id="fileNameText">上传文件</strong>
+          <p>支持 PDF、DOC、DOCX，暂不支持图片、PDF扫描件等需要OCR识别处理的文件。</p>
+          <input id="fileInput" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden />
+          <button class="btn primary" id="uploadBtn">选择文件</button>
+        </div>
+        <div class="form-field"><label class="label">项目型号</label><select class="select" id="modelSelect"><option>H7087</option><option>H3500</option><option>A14C0</option><option>H7073</option><option>H7094</option></select></div>
+        <div class="form-field"><label class="label">涉及语言</label><select class="select" id="languageSelect" multiple><option selected>英语 EN</option><option selected>德语 DE</option><option>法语 FR</option><option>西语 ES</option><option>意语 IT</option><option>日语 JP</option></select></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="cancelModalBtn">取消</button>
+        <button class="btn primary" id="runFromUploadBtn">上传并开始核查</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="exportModal">
+    <div class="modal" style="width:760px;">
+      <div class="modal-head">
+        <span>导出问题清单模板</span>
+        <button class="btn icon" id="closeExportModalBtn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-field">
+          <label class="label">导出文件名</label>
+          <input class="input" id="exportFileName" value="H7087_User Manual_EN_核查问题清单.csv" />
+        </div>
+        <div class="form-field">
+          <label class="label">导出范围</label>
+          <select class="select" id="exportScope">
+            <option value="all">全部问题</option>
+            <option value="grammar">仅语法拼写</option>
+            <option value="translation">仅翻译</option>
+            <option value="regulation">仅法规遗漏</option>
+          </select>
+        </div>
+        <div class="template-preview" id="exportPreview">
+          <div class="template-row head">
+            <div class="template-cell">问题类型</div>
+            <div class="template-cell">严重级别</div>
+            <div class="template-cell">页面定位</div>
+            <div class="template-cell">原文/关键字</div>
+            <div class="template-cell">修改建议</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="cancelExportModalBtn">取消</button>
+        <button class="btn primary" id="downloadIssueListBtn">下载问题清单</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="updateFileModal">
+    <div class="modal">
+      <div class="modal-head">
+        <span>更新核查文件</span>
+        <button class="btn icon" id="closeUpdateModalBtn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="upload-box">
+          <div class="upload-icon">PDF</div>
+          <strong id="updateFileNameText">选择新的核查文件</strong>
+          <p>支持 PDF、DOC、DOCX，暂不支持图片、PDF扫描件等需要OCR识别处理的文件。</p>
+          <input id="updateFileInput" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden />
+          <button class="btn primary" id="updateUploadBtn">选择文件</button>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="cancelUpdateModalBtn">取消</button>
+        <button class="btn primary" id="confirmUpdateFileBtn">上传并重新核查</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-mask" id="loadingMask">
+    <div class="loading-card">
+      <div class="loader"></div>
+      <strong>正在核查文件</strong>
+      <p style="color:var(--muted);font-size:13px;line-height:1.7;margin:10px 0 0;">解析文件页面，抽取关键字，并执行语法拼写、翻译一致性、法规遗漏检查。</p>
+    </div>
+  </div>
+
+  <script>
+    const records = document.querySelectorAll('.record');
+    const newCheckBtn = document.getElementById('newCheckBtn');
+    const exportIssuesBtn = document.getElementById('exportIssuesBtn');
+    const exportModal = document.getElementById('exportModal');
+    const closeExportModalBtn = document.getElementById('closeExportModalBtn');
+    const cancelExportModalBtn = document.getElementById('cancelExportModalBtn');
+    const downloadIssueListBtn = document.getElementById('downloadIssueListBtn');
+    const downloadOriginalBtn = document.getElementById('downloadOriginalBtn');
+    const checkModal = document.getElementById('checkModal');
+    const updateFileModal = document.getElementById('updateFileModal');
+    const closeUpdateModalBtn = document.getElementById('closeUpdateModalBtn');
+    const cancelUpdateModalBtn = document.getElementById('cancelUpdateModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+    const taskTitle = document.getElementById('taskTitle');
+    const statusBadge = document.getElementById('statusBadge');
+    const totalText = document.getElementById('totalText');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const updateUploadBtn = document.getElementById('updateUploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    const updateFileInput = document.getElementById('updateFileInput');
+    const fileNameText = document.getElementById('fileNameText');
+    const updateFileNameText = document.getElementById('updateFileNameText');
+    const loadingMask = document.getElementById('loadingMask');
+    const startCheckBtn = document.getElementById('startCheckBtn');
+    const runFromUploadBtn = document.getElementById('runFromUploadBtn');
+    const issueCards = document.querySelectorAll('.issue-card');
+    const tabs = document.querySelectorAll('.tab');
+    const modelSelect = document.getElementById('modelSelect');
+    const exportFileName = document.getElementById('exportFileName');
+    const exportScope = document.getElementById('exportScope');
+    const exportPreview = document.getElementById('exportPreview');
+
+    const typeLabelMap = { grammar: '语法/用词', translation: '翻译/参数', regulation: '法规遗漏' };
+
+    function collectIssues(scope) {
+      const rows = [];
+      issueCards.forEach((card) => {
+        if (scope !== 'all' && card.dataset.type !== scope) return;
+        const vals = card.querySelectorAll('.issue-meta .val');
+        rows.push({
+          type: typeLabelMap[card.dataset.type] || card.dataset.type || '',
+          level: (card.querySelector('.issue-title .badge')?.textContent || '').trim(),
+          page: card.dataset.page || '',
+          keyword: card.dataset.keyword || '',
+          suggestion: (vals[1]?.textContent || '').trim()
+        });
+      });
+      return rows;
+    }
+
+    function renderExportPreview() {
+      const scope = exportScope.value;
+      const rows = collectIssues(scope);
+      let html = '<div class="template-row head">'
+        + '<div class="template-cell">问题类型</div>'
+        + '<div class="template-cell">严重级别</div>'
+        + '<div class="template-cell">页面定位</div>'
+        + '<div class="template-cell">原文/关键字</div>'
+        + '<div class="template-cell">修改建议</div></div>';
+      if (!rows.length) {
+        html += '<div class="template-row"><div class="template-cell" style="grid-column:1 / -1;border-right:0;color:#8c96aa;">当前范围暂无问题</div></div>';
+      } else {
+        rows.forEach((r) => {
+          html += '<div class="template-row">'
+            + `<div class="template-cell">${r.type}</div>`
+            + `<div class="template-cell">${r.level}</div>`
+            + `<div class="template-cell">${r.page}</div>`
+            + `<div class="template-cell">${r.keyword}</div>`
+            + `<div class="template-cell">${r.suggestion}</div></div>`;
+        });
+      }
+      exportPreview.innerHTML = html;
+    }
+
+    function csvCell(value) {
+      const text = String(value ?? '').replace(/"/g, '""');
+      return `"${text}"`;
+    }
+
+    function downloadIssueList() {
+      const rows = collectIssues(exportScope.value);
+      const header = ['问题类型', '严重级别', '页面定位', '原文/关键字', '修改建议'];
+      const lines = [header.map(csvCell).join(',')];
+      rows.forEach((r) => {
+        lines.push([r.type, r.level, r.page, r.keyword, r.suggestion].map(csvCell).join(','));
+      });
+      // \uFEFF BOM 让 Excel 正确识别 UTF-8 中文
+      const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      let name = (exportFileName.value || '核查问题清单.csv').trim();
+      if (!/\.csv$/i.test(name)) name = name.replace(/\.(xlsx|xls)$/i, '') + '.csv';
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function closeModal() {
+      checkModal.classList.remove('open');
+    }
+
+    function closeExportModal() {
+      exportModal.classList.remove('open');
+    }
+
+    function closeUpdateModal() {
+      updateFileModal.classList.remove('open');
+    }
+
+    function setRecord(record) {
+      records.forEach((item) => item.classList.remove('active'));
+      record.classList.add('active');
+      taskTitle.textContent = record.dataset.name;
+      statusBadge.textContent = record.dataset.status;
+      statusBadge.className = record.dataset.total === '0' ? 'badge ok' : 'badge warn';
+      totalText.textContent = record.dataset.total;
+    }
+
+    function runCheck() {
+      closeModal();
+      closeUpdateModal();
+      loadingMask.classList.add('open');
+      statusBadge.textContent = '核查中';
+      statusBadge.className = 'badge blue';
+      startCheckBtn.textContent = '核查中...';
+      runFromUploadBtn.textContent = '核查中...';
+      window.setTimeout(() => {
+        loadingMask.classList.remove('open');
+        startCheckBtn.textContent = '更新核查文件';
+        runFromUploadBtn.textContent = '上传并开始核查';
+        statusBadge.textContent = '发现 5 个问题';
+        statusBadge.className = 'badge warn';
+        totalText.textContent = '5';
+      }, 1600);
+    }
+
+    function locateIssue(card) {
+      issueCards.forEach((item) => item.classList.remove('active'));
+      document.querySelectorAll('mark.issue').forEach((item) => item.classList.remove('active'));
+      card.classList.add('active');
+      const keyword = card.dataset.keyword;
+      const page = card.dataset.page;
+      const mark = document.querySelector(`mark.issue[data-key="${keyword}"]`);
+      if (mark) {
+        mark.classList.add('active');
+        mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+
+    function flashButton(button, text) {
+      const original = button.textContent;
+      button.textContent = text;
+      window.setTimeout(() => { button.textContent = original; }, 1200);
+    }
+
+    records.forEach((record) => record.addEventListener('click', () => setRecord(record)));
+    newCheckBtn.addEventListener('click', () => checkModal.classList.add('open'));
+    exportIssuesBtn.addEventListener('click', () => {
+      const base = (taskTitle.textContent || '核查问题清单').replace(/\.(pdf|docx?|csv|xlsx?)$/i, '');
+      exportFileName.value = `${base}_核查问题清单.csv`;
+      exportScope.value = 'all';
+      renderExportPreview();
+      exportModal.classList.add('open');
+    });
+    exportScope.addEventListener('change', renderExportPreview);
+    closeExportModalBtn.addEventListener('click', closeExportModal);
+    cancelExportModalBtn.addEventListener('click', closeExportModal);
+    downloadIssueListBtn.addEventListener('click', () => {
+      downloadIssueList();
+      flashButton(downloadIssueListBtn, '已下载');
+    });
+    downloadOriginalBtn.addEventListener('click', () => { downloadOriginalBtn.textContent = '原文件下载中...'; window.setTimeout(() => { downloadOriginalBtn.textContent = '下载核查原文件'; }, 1200); });
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelModalBtn.addEventListener('click', closeModal);
+    closeUpdateModalBtn.addEventListener('click', closeUpdateModal);
+    cancelUpdateModalBtn.addEventListener('click', closeUpdateModal);
+    uploadBtn.addEventListener('click', () => fileInput.click());
+    updateUploadBtn.addEventListener('click', () => updateFileInput.click());
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      fileNameText.textContent = file.name;
+      taskTitle.textContent = `${modelSelect.value}_${file.name}`;
+      statusBadge.textContent = '待核查';
+      statusBadge.className = 'badge blue';
+    });
+    updateFileInput.addEventListener('change', () => {
+      const file = updateFileInput.files[0];
+      if (!file) return;
+      updateFileNameText.textContent = file.name;
+      taskTitle.textContent = file.name;
+      statusBadge.textContent = '待重新核查';
+      statusBadge.className = 'badge blue';
+    });
+    startCheckBtn.addEventListener('click', () => updateFileModal.classList.add('open'));
+    runFromUploadBtn.addEventListener('click', runCheck);
+    document.getElementById('confirmUpdateFileBtn').addEventListener('click', runCheck);
+    issueCards.forEach((card) => card.addEventListener('click', () => locateIssue(card)));
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((item) => item.classList.remove('active'));
+        tab.classList.add('active');
+        const filter = tab.dataset.filter;
+        issueCards.forEach((card) => {
+          card.style.display = filter === 'all' || card.dataset.type === filter ? 'block' : 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

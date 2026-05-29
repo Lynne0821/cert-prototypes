@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CDF清单</title>
+  <style>
+    :root {
+      --header-bg: #1f2a44; --sidebar-bg: #1a2236; --primary: #1677ff; --primary-hover: #4096ff;
+      --danger: #ff4d4f; --border: #e8e8e8; --bg-page: #f5f6f8; --bg-white: #fff;
+      --text: #1f1f1f; --text-secondary: #666; --table-head: #fafafa; --table-stripe: #fafafa;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; color: var(--text); background: var(--bg-page); font-size: 14px; }
+    .layout { min-height: 100vh; display: grid; grid-template-columns: 56px 1fr; }
+    .sidebar { background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; align-items: center; padding-top: 16px; gap: 20px; }
+    .sidebar-icon { width: 32px; height: 32px; border-radius: 6px; background: rgba(255,255,255,.12); display: grid; place-items: center; }
+    .sidebar-label { font-size: 11px; color: rgba(255,255,255,.75); writing-mode: vertical-rl; letter-spacing: 2px; }
+    .main { display: flex; flex-direction: column; min-width: 0; }
+    .topbar { height: 48px; background: var(--header-bg); color: #fff; display: flex; align-items: center; padding: 0 16px; gap: 12px; }
+    .topbar-brand { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+    .topbar-brand span:first-child { width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,.15); display: grid; place-items: center; }
+    .tabs { display: flex; gap: 4px; flex: 1; }
+    .tab { height: 32px; padding: 0 12px; border-radius: 4px 4px 0 0; background: rgba(255,255,255,.08); color: rgba(255,255,255,.85); font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+    .tab.active { background: #fff; color: var(--text); }
+    .topbar-right { display: flex; gap: 16px; font-size: 13px; color: rgba(255,255,255,.85); }
+    .filter-bar { background: #eef0f3; padding: 12px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+    .select, .input { height: 32px; border: 1px solid #d9d9d9; border-radius: 4px; padding: 0 10px; font-size: 13px; min-width: 140px; background: #fff; outline: none; }
+    .select:focus, .input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(22,119,255,.15); }
+    .filter-actions { display: flex; gap: 8px; margin-left: auto; }
+    .panel { flex: 1; background: #fff; display: flex; flex-direction: column; }
+    .toolbar { padding: 12px 16px; display: flex; justify-content: flex-end; border-bottom: 1px solid var(--border); }
+    .toolbar-actions { display: flex; gap: 8px; }
+    .btn { height: 32px; padding: 0 14px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid transparent; font-family: inherit; }
+    .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-default { background: #fff; color: var(--primary); border-color: var(--primary); }
+    .btn-default:hover { color: var(--primary-hover); border-color: var(--primary-hover); }
+    .table-wrap { flex: 1; overflow: auto; padding: 0 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { background: var(--table-head); padding: 10px 12px; border-bottom: 1px solid var(--border); position: sticky; top: 0; white-space: nowrap; }
+    tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.55; word-break: break-word; }
+    tbody tr:nth-child(even) { background: var(--table-stripe); }
+    tbody tr:hover { background: #f0f7ff; }
+    .link { color: var(--primary); cursor: pointer; display: block; margin-bottom: 4px; text-decoration: none; }
+    .link.danger { color: var(--danger); }
+    .pagination { padding: 12px 16px; display: flex; justify-content: flex-end; align-items: center; gap: 12px; border-top: 1px solid var(--border); color: var(--text-secondary); }
+    .page-btn { min-width: 28px; height: 28px; border: 1px solid #d9d9d9; border-radius: 4px; background: #fff; cursor: pointer; }
+    .page-btn.active { border-color: var(--primary); color: var(--primary); }
+    .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 100; }
+    .modal-mask.open { display: flex; }
+    .modal { width: 720px; max-height: 90vh; background: #fff; border-radius: 8px; display: flex; flex-direction: column; }
+    .modal-head { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-weight: 600; }
+    .modal-close { border: 0; background: transparent; font-size: 18px; cursor: pointer; color: var(--text-secondary); }
+    .modal-body { padding: 20px; overflow: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field label { display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; }
+    .form-field .req { color: var(--danger); }
+    .form-field .input, .form-field textarea { width: 100%; }
+    .form-field textarea { min-height: 72px; padding: 8px 10px; border: 1px solid #d9d9d9; border-radius: 4px; resize: vertical; font-family: inherit; }
+    .modal-foot { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+    .empty-tip { text-align: center; padding: 48px; color: var(--text-secondary); }
+    .toast { position: fixed; top: 64px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.75); color: #fff; padding: 10px 20px; border-radius: 4px; display: none; z-index: 200; }
+    .toast.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar"><div class="sidebar-icon">&#128737;</div><div class="sidebar-label">认证</div></aside>
+    <div class="main">
+      <header class="topbar">
+        <div class="topbar-brand"><span>认</span><span>认证</span></div>
+        <div class="tabs">
+          <span class="tab">认证需求池</span><span class="tab">认证委托管理</span>
+          <a class="tab active" href="./CDF清单页面原型.html" style="text-decoration:none;">CDF清单 <span class="close">&times;</span></a>
+        </div>
+        <div class="topbar-right">
+          <a href="./认证说明书Brief操作页_1920.html" style="color:rgba(255,255,255,.85);text-decoration:none;">说明书Brief</a>
+          <a href="./受控文件核查页面原型_v2.0_950.html" style="color:rgba(255,255,255,.85);text-decoration:none;">受控文件核查</a>
+          <a href="./草稿报告智能审核原型_v2.0_950.html" style="color:rgba(255,255,255,.85);text-decoration:none;">报告智能审核</a>
+          <a href="./认证法规召回监控_950.html" style="color:rgba(255,255,255,.85);text-decoration:none;">法规召回监控</a>
+          <span>认证系统 &#9662;</span><span>JU</span>
+        </div>
+      </header>
+      <div class="content">
+        <div class="filter-bar">
+          <select class="select" id="filterCategory"><option value="">类别</option><option>Plastic</option><option>Metal</option><option>Electronic</option></select>
+          <input class="input" id="filterKeyword" placeholder="零部件名称/制造商/型号" style="min-width:200px;" />
+          <input class="input" id="filterMark" placeholder="证书编号" style="min-width:160px;" />
+          <select class="select" id="filterStandard"><option value="">标准</option><option>UL 94</option><option>UL 746C</option><option>CSA-C22.2</option></select>
+          <div class="filter-actions">
+            <button class="btn btn-primary" id="searchBtn">搜索</button>
+            <button class="btn btn-default" id="resetBtn">重置</button>
+          </div>
+        </div>
+        <section class="panel">
+          <div class="toolbar">
+            <div class="toolbar-actions">
+              <button class="btn btn-primary" id="addBtn">新增</button>
+              <button class="btn btn-default" id="exportBtn">导出</button>
+              <button class="btn btn-default" id="downloadTemplateBtn">下载导入模板</button>
+              <button class="btn btn-default" id="importBtn">导入</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th style="width:48px;">序号</th><th>类别</th><th>零部件名称/编号</th><th>制造商/商标</th>
+                <th>型号/规格</th><th>技术参数</th><th>标准</th><th>认证标志/证书编号</th><th>操作</th>
+              </tr></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+            <div class="empty-tip" id="emptyTip" style="display:none;">暂无数据，请点击「新增」添加关键物料记录</div>
+          </div>
+          <div class="pagination">
+            <span id="totalCount">共 0 条</span>
+            <select class="select" style="height:28px;min-width:90px;"><option>20条/页</option><option>50条/页</option></select>
+            <button class="page-btn">&lsaquo;</button><button class="page-btn active">1</button><button class="page-btn">&rsaquo;</button>
+            <span>前往 <input class="input" style="width:40px;height:28px;min-width:40px;text-align:center;" value="1" /> 页</span>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="modal-mask" id="formModal">
+    <div class="modal">
+      <div class="modal-head"><span id="modalTitle">新增关键物料</span><button class="modal-close" id="closeModalBtn">&times;</button></div>
+      <div class="modal-body">
+        <div class="form-field"><label><span class="req">*</span>类别</label><input class="input" id="fieldCategory" /></div>
+        <div class="form-field"><label><span class="req">*</span>零部件名称/编号</label><input class="input" id="fieldPartNo" /></div>
+        <div class="form-field full"><label><span class="req">*</span>制造商/商标</label><input class="input" id="fieldManufacturer" /></div>
+        <div class="form-field full"><label><span class="req">*</span>型号/规格</label><textarea id="fieldTypeModel"></textarea></div>
+        <div class="form-field full"><label><span class="req">*</span>技术参数</label><textarea id="fieldTechnical"></textarea></div>
+        <div class="form-field full"><label><span class="req">*</span>标准</label><textarea id="fieldStandards"></textarea></div>
+        <div class="form-field full"><label><span class="req">*</span>认证标志/证书编号</label><input class="input" id="fieldMark" /></div>
+      </div>
+      <div class="modal-foot"><button class="btn btn-default" id="cancelModalBtn">取消</button><button class="btn btn-primary" id="saveModalBtn">保存</button></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script>
+    const initialData = [
+      { id: 1, category: 'Plastic', partNo: 'Lamp enclosure', manufacturer: 'Covestro Deutschland AG [PC Resins]', typeModel: '2407 + (f1)\nRW2407 + (z) (f1)', technical: 'PC, V-2, 115C, min. 1.5 mm thick.', standards: 'UL 94; UL 746C; CSA-C22.2 No. 0.17', mark: 'UL E41613' },
+      { id: 2, category: 'Plastic', partNo: 'Diffuser cover', manufacturer: 'Sabic Innovative Plastics [PC]', typeModel: '943A', technical: 'PC, V-0, 105C, min. 1.0 mm thick.', standards: 'UL 94; UL 746C', mark: 'UL E207780' },
+      { id: 3, category: 'Electronic', partNo: 'LED driver module', manufacturer: 'Mean Well Enterprises Co., Ltd.', typeModel: 'HLG-40H-12A', technical: 'Input: 100-240VAC; Output: 12VDC 3.33A', standards: 'IEC 62368-1; EN 61347', mark: 'UL E328651' }
+    ];
+    let list = JSON.parse(JSON.stringify(initialData));
+    let editingId = null, nextId = 4;
+    const tableBody = document.getElementById('tableBody');
+    const emptyTip = document.getElementById('emptyTip');
+    const totalCount = document.getElementById('totalCount');
+    const formModal = document.getElementById('formModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const toast = document.getElementById('toast');
+    const filterCategory = document.getElementById('filterCategory');
+    const filterKeyword = document.getElementById('filterKeyword');
+    const filterMark = document.getElementById('filterMark');
+    const filterStandard = document.getElementById('filterStandard');
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+    }
+
+    function getFilteredList() {
+      const category = filterCategory.value.trim();
+      const keyword = filterKeyword.value.trim().toLowerCase();
+      const mark = filterMark.value.trim().toLowerCase();
+      const standard = filterStandard.value.trim();
+      return list.filter((row) => {
+        if (category && row.category !== category) return false;
+        if (standard && !row.standards.includes(standard)) return false;
+        if (keyword) {
+          const hay = `${row.partNo} ${row.manufacturer} ${row.typeModel}`.toLowerCase();
+          if (!hay.includes(keyword)) return false;
+        }
+        if (mark && !String(row.mark).toLowerCase().includes(mark)) return false;
+        return true;
+      });
+    }
+
+    function renderTable() {
+      const rows = getFilteredList();
+      tableBody.innerHTML = '';
+      emptyTip.style.display = rows.length ? 'none' : 'block';
+      totalCount.textContent = `共 ${rows.length} 条`;
+      rows.forEach((row, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${index + 1}</td><td>${escapeHtml(row.category)}</td><td>${escapeHtml(row.partNo)}</td><td>${escapeHtml(row.manufacturer)}</td><td>${escapeHtml(row.typeModel)}</td><td>${escapeHtml(row.technical)}</td><td>${escapeHtml(row.standards)}</td><td>${escapeHtml(row.mark)}</td><td><a class="link" data-action="edit" data-id="${row.id}">编辑</a><a class="link danger" data-action="delete" data-id="${row.id}">删除</a></td>`;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function resetFilters() {
+      filterCategory.value = '';
+      filterKeyword.value = '';
+      filterMark.value = '';
+      filterStandard.value = '';
+      renderTable();
+    }
+
+    function openModal(mode, row) {
+      editingId = mode === 'edit' ? row.id : null;
+      modalTitle.textContent = mode === 'edit' ? '编辑关键物料' : '新增关键物料';
+      fieldCategory.value = row?.category || '';
+      fieldPartNo.value = row?.partNo || '';
+      fieldManufacturer.value = row?.manufacturer || '';
+      fieldTypeModel.value = row?.typeModel || '';
+      fieldTechnical.value = row?.technical || '';
+      fieldStandards.value = row?.standards || '';
+      fieldMark.value = row?.mark || '';
+      formModal.classList.add('open');
+    }
+
+    function closeModal() {
+      formModal.classList.remove('open');
+      editingId = null;
+    }
+
+    function saveRow() {
+      const payload = {
+        category: fieldCategory.value.trim(),
+        partNo: fieldPartNo.value.trim(),
+        manufacturer: fieldManufacturer.value.trim(),
+        typeModel: fieldTypeModel.value.trim(),
+        technical: fieldTechnical.value.trim(),
+        standards: fieldStandards.value.trim(),
+        mark: fieldMark.value.trim()
+      };
+      const required = [
+        ['category', '类别'], ['partNo', '零部件名称/编号'], ['manufacturer', '制造商/商标'],
+        ['typeModel', '型号/规格'], ['technical', '技术参数'], ['standards', '标准'], ['mark', '认证标志/证书编号']
+      ];
+      const missing = required.filter(([k]) => !payload[k]).map(([, label]) => label);
+      if (missing.length) {
+        showToast('请填写：' + missing.join('、'));
+        return;
+      }
+      if (editingId) {
+        Object.assign(list.find((i) => i.id === editingId), payload);
+        showToast('保存成功');
+      } else {
+        list.unshift({ id: nextId++, ...payload });
+        showToast('新增成功');
+      }
+      closeModal();
+      renderTable();
+    }
+
+    function deleteRow(id) {
+      const row = list.find((i) => i.id === id);
+      if (!row || !confirm(`确认删除「${row.partNo}」？`)) return;
+      list = list.filter((i) => i.id !== id);
+      showToast('删除成功');
+      renderTable();
+    }
+
+    document.getElementById('addBtn').addEventListener('click', () => openModal('add'));
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+    document.getElementById('saveModalBtn').addEventListener('click', saveRow);
+    document.getElementById('searchBtn').addEventListener('click', renderTable);
+    document.getElementById('resetBtn').addEventListener('click', resetFilters);
+    document.getElementById('exportBtn').addEventListener('click', () => showToast('已导出当前列表（原型演示）'));
+    document.getElementById('downloadTemplateBtn').addEventListener('click', () => showToast('已下载导入模板（原型演示）'));
+    document.getElementById('importBtn').addEventListener('click', () => showToast('导入功能（原型演示）'));
+    filterKeyword.addEventListener('keydown', (e) => { if (e.key === 'Enter') renderTable(); });
+    filterMark.addEventListener('keydown', (e) => { if (e.key === 'Enter') renderTable(); });
+
+    tableBody.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const id = Number(btn.dataset.id);
+      const row = list.find((i) => i.id === id);
+      if (btn.dataset.action === 'edit') openModal('edit', row);
+      if (btn.dataset.action === 'delete') deleteRow(id);
+    });
+
+    renderTable();
+  </script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>法规召回监控</title>
+  <style>
+    :root {
+      --bg: #080a12;
+      --line: #2b2d38;
+      --line-2: #3a3c48;
+      --text: #f1f3fb;
+      --muted: #8b93aa;
+      --amber: #f5a300;
+      --blue: #2f8cff;
+      --green: #35c982;
+      --red: #ff5964;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Manrope", "Noto Sans SC", "PingFang SC", sans-serif;
+    }
+
+    .app {
+      width: 1920px;
+      height: 950px;
+      margin: 0 auto;
+      background: #090c16;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 54px;
+      display: grid;
+      grid-template-columns: 220px 1fr 140px;
+      align-items: center;
+      border-bottom: 1px solid #1f2330;
+      background: #090a0d;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 16px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: var(--amber);
+      color: #17120a;
+      font-size: 13px;
+    }
+
+    .menu {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu-item {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 8px;
+      color: #a1a7b6;
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .menu-item.active {
+      color: var(--amber);
+      background: rgba(245, 163, 0, .12);
+      border-color: rgba(245, 163, 0, .25);
+    }
+
+    .top-actions {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      padding-right: 18px;
+      color: #8f96a8;
+      border-left: 1px solid #1f2330;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #7a61ff;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .page {
+      height: 896px;
+      padding: 14px 18px 18px;
+      background: linear-gradient(180deg, #15151b 0%, #0c0f18 100%);
+      display: grid;
+      grid-template-rows: 52px 1fr 34px;
+      gap: 12px;
+    }
+
+    .filter-bar {
+      border: 1px solid var(--line-2);
+      border-radius: 10px;
+      background: rgba(255,255,255,.07);
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 160px 180px 170px 170px 240px 88px 88px;
+      gap: 10px;
+      align-items: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .select,
+    .input {
+      width: 100%;
+      height: 30px;
+      border: 1px solid #42444f;
+      border-radius: 8px;
+      background: #30313a;
+      color: #dfe4f2;
+      padding: 0 10px;
+      outline: none;
+      font-size: 12px;
+    }
+
+    .btn {
+      height: 30px;
+      border: 1px solid var(--line-2);
+      border-radius: 8px;
+      background: #2c2e37;
+      color: #dfe4f2;
+      padding: 0 12px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn.primary {
+      border-color: var(--amber);
+      background: var(--amber);
+      color: #17120a;
+      font-weight: 700;
+    }
+
+    .content {
+      min-height: 0;
+      border: 1px solid var(--line-2);
+      border-radius: 10px;
+      background: #17181f;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: 52px 1fr;
+    }
+
+    .table-head {
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      border-bottom: 1px solid var(--line-2);
+      background: #24252d;
+    }
+
+    .table-wrap {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 12px;
+    }
+
+    thead th {
+      height: 44px;
+      background: #11121a;
+      color: #d7dbe8;
+      text-align: left;
+      padding: 0 10px;
+      border-right: 1px solid #30323d;
+      border-bottom: 1px solid #30323d;
+      font-weight: 800;
+    }
+
+    tbody td {
+      height: 94px;
+      padding: 10px;
+      border-right: 1px solid #30323d;
+      border-bottom: 1px solid #30323d;
+      color: #cfd5e6;
+      vertical-align: top;
+      line-height: 1.55;
+    }
+
+    tbody tr {
+      background: #18191f;
+    }
+
+    tbody tr:hover {
+      background: rgba(245, 163, 0, .06);
+    }
+
+    .muted { color: var(--muted); }
+    .link { color: #53a3ff; text-decoration: underline; }
+
+    .tag {
+      display: inline-flex;
+      min-height: 22px;
+      align-items: center;
+      border-radius: 6px;
+      padding: 2px 7px;
+      border: 1px solid #3d4f77;
+      color: #6ea9ff;
+      background: rgba(47,140,255,.1);
+      font-size: 12px;
+      margin: 0 4px 4px 0;
+      line-height: 1.25;
+    }
+
+    .tag.red {
+      color: #ff9ca2;
+      border-color: rgba(255,89,100,.36);
+      background: rgba(255,89,100,.1);
+    }
+
+    .tag.green {
+      color: #8fe5ba;
+      border-color: rgba(53,201,130,.36);
+      background: rgba(53,201,130,.1);
+    }
+
+    .tag.amber {
+      color: #ffcf72;
+      border-color: rgba(245,163,0,.36);
+      background: rgba(245,163,0,.1);
+    }
+
+    .summary-copy {
+      color: #dce2f1;
+      line-height: 1.65;
+    }
+
+    .pager {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      color: #8d94a6;
+      font-size: 12px;
+      padding: 0 4px;
+    }
+
+    .page-no {
+      min-width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 1px solid #3b3d47;
+      background: #252730;
+      color: #aeb5c6;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .page-no.active {
+      color: #17120a;
+      border-color: var(--amber);
+      background: var(--amber);
+      font-weight: 800;
+    }
+
+    @media (max-width: 1920px) {
+      body { overflow-x: auto; }
+      .app { margin: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">AI</div>
+        <span>智岩 AI</span>
+      </div>
+      <nav class="menu">
+        <span class="menu-item">企业全局总览</span>
+        <a class="menu-item" href="./认证说明书Brief操作页_1920.html">说明书Breif 生成</a>
+        <a class="menu-item" href="./受控文件核查页面原型_v2.0_950.html">受控文件核查</a>
+        <a class="menu-item" href="./草稿报告智能审核原型_v2.0_950.html">报告智能审核</a>
+        <a class="menu-item active" href="./认证法规召回监控_950.html">法规召回监控</a>
+        <a class="menu-item" href="./CDF清单页面原型.html">CDF清单</a>
+      </nav>
+      <div class="top-actions">
+        <span>☼</span>
+        <span>↗</span>
+        <div class="avatar">王</div>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="filter-bar">
+        <select class="select"><option>地区：全部</option><option>US</option><option>EU</option><option>UK</option><option>CA</option></select>
+        <select class="select"><option>来源网站：全部</option><option>CPSC</option><option>EU Safety Gate</option><option>GOV.UK</option><option>Health Canada</option><option>FCC</option></select>
+        <select class="select"><option>类型：全部</option><option>召回信息</option><option>法规/认证要求</option><option>安全公告</option></select>
+        <select class="select"><option>品类：全部</option><option>照明</option><option>家电</option><option>消费品</option><option>智能硬件</option></select>
+        <select class="select"><option>发布时间：近 7 天</option><option>发布时间：近 30 天</option><option>发布时间：本月</option><option>发布时间：自定义</option></select>
+        <button class="btn">重置</button>
+        <button class="btn primary">查询</button>
+      </section>
+
+      <section class="content">
+        <div class="table-head">
+          <button class="btn primary">导出</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:140px;">地区/来源</th>
+                <th style="width:120px;">类型</th>
+                <th style="width:290px;">公告/召回标题</th>
+                <th style="width:130px;">涉及品类</th>
+                <th style="width:180px;">命中关键词</th>
+                <th style="width:150px;">发布时间</th>
+                <th>AI内容摘要</th>
+                <th style="width:160px;">推送发送时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>US<br><span class="muted">CPSC 消费品安全</span></td>
+                <td><span class="tag red">召回信息</span></td>
+                <td><span class="link">Portable LED lamp recalled due to fire hazard</span><br><span class="muted">原文链接 / 来源栏目已保留</span></td>
+                <td>灯具 / 消费品</td>
+                <td><span class="tag">recall</span><span class="tag">lighting</span><span class="tag">fire hazard</span></td>
+                <td>2026-04-28<br><span class="muted">15:04:51</span></td>
+                <td class="summary-copy">涉及便携 LED 灯召回，主要风险为过热和火灾隐患。建议认证团队确认是否存在同类产品、相似结构或同类风险。</td>
+                <td><span class="tag amber">待推送</span><br><span class="muted">计划：2026-05-04 10:00</span></td>
+              </tr>
+              <tr>
+                <td>EU<br><span class="muted">EU Safety Gate</span></td>
+                <td><span class="tag">法规/认证要求</span></td>
+                <td><span class="link">New energy label requirement for smart lighting products</span><br><span class="muted">原文链接 / 来源栏目已保留</span></td>
+                <td>照明</td>
+                <td><span class="tag">energy label</span><span class="tag">lighting</span><span class="tag">smart</span></td>
+                <td>2026-04-24<br><span class="muted">10:12:36</span></td>
+                <td class="summary-copy">涉及智能照明产品能效标签展示要求，可能影响包装、说明书和页面合规表达，需确认适用区域和生效时间。</td>
+                <td>2026-04-27<br><span class="muted">10:00:00</span></td>
+              </tr>
+              <tr>
+                <td>UK<br><span class="muted">GOV.UK OPSS</span></td>
+                <td><span class="tag amber">安全公告</span></td>
+                <td><span class="link">Household appliance safety notice for overheating risk</span><br><span class="muted">原文链接 / 来源栏目已保留</span></td>
+                <td>家电</td>
+                <td><span class="tag">appliance</span><span class="tag">overheating</span><span class="tag">safety</span></td>
+                <td>2026-04-21<br><span class="muted">09:42:18</span></td>
+                <td class="summary-copy">公告关注家电过热风险，可能影响制冰机、除湿机等产品安全说明和警示语，需要认证工程师判断是否补充合规提示。</td>
+                <td><span class="tag amber">待推送</span><br><span class="muted">计划：2026-05-04 10:00</span></td>
+              </tr>
+              <tr>
+                <td>CA<br><span class="muted">Health Canada</span></td>
+                <td><span class="tag red">召回信息</span></td>
+                <td><span class="link">Children night light marketplace warning notice</span><br><span class="muted">原文链接 / 来源栏目已保留</span></td>
+                <td>灯具 / 儿童用品</td>
+                <td><span class="tag">night light</span><span class="tag">recall</span><span class="tag">children</span></td>
+                <td>2026-04-18<br><span class="muted">13:28:04</span></td>
+                <td class="summary-copy">涉及儿童夜灯类产品安全风险。AI 判断与灯具相关，但需要业务确认是否属于目标渠道和目标品类。</td>
+                <td><span class="tag red">未推送</span><br><span class="muted">业务反馈：误推</span></td>
+              </tr>
+              <tr>
+                <td>US<br><span class="muted">FCC</span></td>
+                <td><span class="tag">法规/认证要求</span></td>
+                <td><span class="link">FCC guidance update for connected home devices</span><br><span class="muted">原文链接 / 来源栏目已保留</span></td>
+                <td>家电 / 智能硬件</td>
+                <td><span class="tag">FCC</span><span class="tag">connected device</span><span class="tag">guidance</span></td>
+                <td>2026-04-15<br><span class="muted">16:20:10</span></td>
+                <td class="summary-copy">涉及联网家居设备 FCC 指引更新，可能影响无线类家电和智能硬件认证资料准备，建议补充 connected home 关键词。</td>
+                <td><span class="tag amber">待推送</span><br><span class="muted">漏推补录</span></td>
+              </tr>
+              <tr>
+                <td>US<br><span class="muted">CPSC 消费品安全</span></td>
+                <td><span class="tag red">召回信息</span></td>
+                <td><span class="link">Battery powered appliance recall due to burn hazard</span><br><span class="muted">原文链接 / 来源栏目已保留</span></td>
+                <td>家电</td>
+                <td><span class="tag">battery</span><span class="tag">burn hazard</span><span class="tag">recall</span></td>
+                <td>2026-04-10<br><span class="muted">11:17:31</span></td>
+                <td class="summary-copy">召回原因与电池和灼伤风险相关，可能影响无线家电、储能结构或带电池产品的安全合规风险判断。</td>
+                <td>2026-04-13<br><span class="muted">10:00:00</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="pager">
+        <span>共 386 条</span>
+        <span class="page-no active">1</span>
+        <span class="page-no">2</span>
+        <span class="page-no">3</span>
+        <span class="page-no">4</span>
+        <span class="page-no">5</span>
+        <span class="page-no">...</span>
+        <span>20 / page</span>
+        <span>Goto</span>
+        <span class="page-no">1</span>
+      </section>
+    </main>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>说明书Breif 生成 - 未生成</title>
+  <style>
+    :root {
+      --bg: #080a12;
+      --panel: #0d101c;
+      --panel-2: #121624;
+      --line: #242839;
+      --line-2: #30364b;
+      --text: #f1f3fb;
+      --muted: #8b93aa;
+      --amber: #f5a300;
+      --teal: #28c7b7;
+      --green: #35c982;
+      --red: #f06d7c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Manrope", "Noto Sans SC", "PingFang SC", sans-serif;
+    }
+
+    .app {
+      width: 1920px;
+      height: 950px;
+      margin: 0 auto;
+      background: #090c16;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 54px;
+      display: grid;
+      grid-template-columns: 220px 1fr 140px;
+      align-items: center;
+      border-bottom: 1px solid #1f2330;
+      background: #090a0d;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 16px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: var(--amber);
+      color: #17120a;
+      font-size: 13px;
+    }
+
+    .menu {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu-item {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 8px;
+      color: #a1a7b6;
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+
+    .menu-item.active {
+      color: var(--amber);
+      background: rgba(245, 163, 0, .12);
+      border-color: rgba(245, 163, 0, .25);
+    }
+
+    .top-actions {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      padding-right: 18px;
+      color: #8f96a8;
+      border-left: 1px solid #1f2330;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #7a61ff;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      height: 896px;
+    }
+
+    .sidebar {
+      border-right: 1px solid #202536;
+      background: #0b0e19;
+      padding: 14px 12px;
+    }
+
+    .btn {
+      height: 36px;
+      border: 1px solid var(--line-2);
+      border-radius: 8px;
+      background: #151927;
+      color: var(--text);
+      padding: 0 13px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      border-color: var(--amber);
+      background: var(--amber);
+      color: #17120a;
+      font-weight: 700;
+    }
+
+    .btn.icon {
+      width: 36px;
+      padding: 0;
+    }
+
+    .seg {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .seg button {
+      height: 32px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: #171b28;
+      color: #9ba2b3;
+      font-size: 13px;
+    }
+
+    .seg .active {
+      color: #17120a;
+      background: var(--amber);
+      font-weight: 700;
+    }
+
+    .search {
+      width: 100%;
+      height: 34px;
+      margin-top: 10px;
+      border: 1px solid #252a3a;
+      border-radius: 8px;
+      background: #111522;
+      color: var(--text);
+      padding: 0 10px;
+      outline: none;
+      font-size: 12px;
+    }
+
+    .date-title {
+      margin: 16px 0 8px;
+      color: #6f7688;
+      font-size: 12px;
+    }
+
+    .project {
+      min-height: 40px;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      color: #cfd6e6;
+      font-size: 13px;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .project.active {
+      background: rgba(245, 163, 0, .13);
+      border-color: rgba(245, 163, 0, .18);
+    }
+
+    .project .sub {
+      display: block;
+      color: #828a9c;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .main {
+      display: grid;
+      grid-template-rows: 74px 1fr 168px;
+      min-width: 0;
+      background: #0c0f1b;
+    }
+
+    .task-bar {
+      padding: 10px 22px;
+      border-bottom: 1px solid #202536;
+      background: #101321;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .task-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 12px rgba(40,199,183,.45);
+    }
+
+    .confirm-strip {
+      display: flex;
+      gap: 8px;
+    }
+
+    .confirm {
+      height: 28px;
+      border: 1px solid #262c40;
+      border-radius: 8px;
+      background: #0d1220;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .flow-text {
+      color: #7f889b;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .confirm .label { color: #8f98ad; }
+    .status-ok { color: var(--green); }
+    .status-warn { color: var(--amber); }
+
+    .document-area {
+      padding: 16px 22px;
+      overflow: hidden;
+    }
+
+    .empty-state,
+    .loading-state {
+      height: 100%;
+      min-height: 555px;
+      border: 1px dashed #30384f;
+      border-radius: 8px;
+      background: #0d111d;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 28px;
+    }
+
+    .loading-state {
+      display: none;
+      border-style: solid;
+    }
+
+    .main.generating .empty-state { display: none; }
+    .main.generating .loading-state { display: grid; }
+
+    .empty-state strong,
+    .loading-state strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .empty-state span,
+    .loading-state span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .loader {
+      width: 52px;
+      height: 52px;
+      border: 4px solid #273047;
+      border-top-color: var(--amber);
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-steps {
+      width: 420px;
+      margin: 18px auto 0;
+      display: grid;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .loading-step {
+      height: 32px;
+      border: 1px solid #2a3147;
+      border-radius: 8px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111624;
+      font-size: 13px;
+    }
+
+    .composer {
+      padding: 12px 22px 14px;
+      border-top: 1px solid #202536;
+      background: #111522;
+    }
+
+    .composer-box {
+      border: 1px solid #2a3147;
+      border-radius: 10px;
+      background: #0c101c;
+      padding: 12px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 66px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      resize: none;
+      font-size: 13px;
+      line-height: 1.5;
+      font-family: inherit;
+    }
+
+    .composer-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #9ba5ba;
+      font-size: 12px;
+    }
+
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .modal-mask.open { display: flex; }
+
+    .modal {
+      width: 560px;
+      border: 1px solid #30364a;
+      border-radius: 10px;
+      background: #111522;
+      box-shadow: 0 24px 70px rgba(0,0,0,.55);
+      overflow: hidden;
+    }
+
+    .modal-head {
+      height: 52px;
+      border-bottom: 1px solid #252b3d;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #151928;
+      font-weight: 700;
+    }
+
+    .modal-body { padding: 16px; }
+
+    .modal-actions {
+      height: 56px;
+      border-top: 1px solid #252b3d;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      background: #0f1320;
+    }
+
+    .label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 0 0 6px;
+    }
+
+    .form-field { margin-bottom: 12px; }
+
+    .input,
+    .select {
+      width: 100%;
+      height: 36px;
+      border: 1px solid #2a3147;
+      border-radius: 8px;
+      background: #0b111d;
+      color: var(--text);
+      padding: 0 10px;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .field-hint {
+      display: block;
+      color: #6f7688;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    /* 多选：销售国家 */
+    .multi-select { position: relative; }
+
+    .ms-control {
+      min-height: 36px;
+      border: 1px solid #2a3147;
+      border-radius: 8px;
+      background: #0b111d;
+      padding: 4px 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .ms-placeholder { color: var(--muted); font-size: 13px; }
+
+    .ms-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 24px;
+      padding: 0 6px 0 8px;
+      border-radius: 6px;
+      background: rgba(245,163,0,.16);
+      border: 1px solid rgba(245,163,0,.3);
+      color: var(--amber);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .ms-tag .x { cursor: pointer; }
+
+    .ms-panel {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      z-index: 5;
+      max-height: 184px;
+      overflow: auto;
+      border: 1px solid #2a3147;
+      border-radius: 8px;
+      background: #0d1320;
+      padding: 6px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.5);
+    }
+
+    .multi-select.open .ms-panel { display: block; }
+
+    .ms-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .ms-option:hover { background: #151b2a; }
+    .ms-option input { accent-color: var(--amber); }
+    .ms-option .code { font-weight: 700; width: 30px; }
+    .ms-option .name { color: var(--muted); font-size: 12px; }
+
+    /* 参考说明书 PDF 展示 */
+    .pdf-display {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px;
+      border: 1px solid #2a3147;
+      border-radius: 8px;
+      background: #0b111d;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    .pdf-ico {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      background: rgba(240,109,124,.16);
+      color: var(--red);
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+
+    .pdf-name { color: var(--text); word-break: break-all; }
+    .pdf-empty { color: var(--muted); }
+    .pdf-link {
+      margin-left: auto;
+      color: var(--amber);
+      font-size: 12px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1920px) {
+      body { overflow-x: auto; }
+      .app { margin: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">AI</div>
+        <span>智岩 AI</span>
+      </div>
+      <nav class="menu">
+        <span class="menu-item">企业全局总览</span>
+        <a class="menu-item active" href="./认证说明书Brief操作页_1920.html">说明书Breif 生成</a>
+        <a class="menu-item" href="./受控文件核查页面原型_v2.0_950.html">受控文件核查</a>
+        <a class="menu-item" href="./草稿报告智能审核原型_v2.0_950.html">报告智能审核</a>
+        <a class="menu-item" href="./认证法规召回监控_950.html">法规召回监控</a>
+        <a class="menu-item" href="./CDF清单页面原型.html">CDF清单</a>
+      </nav>
+      <div class="top-actions">
+        <span>☼</span>
+        <span>↗</span>
+        <div class="avatar">王</div>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar">
+        <button class="btn primary" id="newProjectBtn" style="width:100%;">+ 新增项目</button>
+        <div class="seg">
+          <button class="active">个人</button>
+          <button>全部</button>
+        </div>
+        <input class="search" placeholder="搜索项目..." />
+        <div class="date-title">今天</div>
+        <div class="project active" data-target="./认证说明书Brief操作页_1920.html">
+          H7087 五国语言
+        </div>
+        <div class="project" data-target="./认证说明书Brief操作页_已生成_950.html">
+          H3500 英法说明书
+        </div>
+        <div class="date-title">本周</div>
+        <div class="project" data-target="./认证说明书Brief操作页_已生成_950.html">
+          H7072 英文说明书
+        </div>
+      </aside>
+
+      <main class="main" id="main">
+        <section class="task-bar">
+          <div>
+            <div class="task-title">
+              <span class="dot"></span>
+              <span id="taskTitle">H7087 五国语言说明书 Brief</span>
+              <span id="taskRef" style="color:var(--muted);font-size:12px;font-weight:500;">终版参考：807-0003-01450 V2.0</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn">保存</button>
+            <button class="btn">导出修改要素Brief</button>
+            <button class="btn primary">导出注释修改稿</button>
+          </div>
+        </section>
+
+        <section class="document-area">
+          <div class="empty-state">
+            <div>
+              <strong>当前项目尚未生成 Brief</strong>
+              <span>在底部输入调整要求，或补充图片、文件后点击“开始生成”。系统将生成修改要素 Brief 和参考说明书注释修改稿。</span>
+            </div>
+          </div>
+
+          <div class="loading-state">
+            <div>
+              <div class="loader"></div>
+              <strong>正在生成说明书 Brief</strong>
+              <span>系统正在读取终版说明书、技术规格、销售区域与补充资料。</span>
+              <div class="loading-steps">
+                <div class="loading-step"><span>匹配终版说明书章节</span><span class="status-ok">完成</span></div>
+                <div class="loading-step"><span>抽取技术规格与认证字段</span><span class="status-ok">完成</span></div>
+                <div class="loading-step"><span>生成修改要素 Brief</span><span class="status-warn">进行中</span></div>
+                <div class="loading-step"><span>生成参考说明书注释修改稿</span><span>等待</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="composer">
+          <div class="composer-box">
+            <textarea id="adjustInput" placeholder="输入调整要求。示例：Power Input 改为 200-240；At a Glance 增加光源和适配器标识；ErP 信息先按 H7094 排版。"></textarea>
+            <div class="composer-actions">
+              <div class="input-group">
+                <button class="btn icon">＋</button>
+                <span>图片</span>
+                <span>文件</span>
+              </div>
+              <button class="btn primary" id="generateBtn">开始生成</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="projectModal">
+    <div class="modal">
+      <div class="modal-head">
+        <span>新增项目</span>
+        <button class="btn icon" id="closeModalBtn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-field">
+          <label class="label">型号</label>
+          <input class="input" id="modelInput" list="modelList" value="H7087" placeholder="输入关键字模糊搜索产品信息库型号" autocomplete="off" />
+          <datalist id="modelList">
+            <option value="H7087"></option>
+            <option value="H3500"></option>
+            <option value="H7072"></option>
+            <option value="H3200"></option>
+            <option value="H7045"></option>
+          </datalist>
+          <span class="field-hint">下拉选择，支持模糊搜索</span>
+        </div>
+
+        <div class="form-field">
+          <label class="label">销售国家</label>
+          <div class="multi-select" id="countrySelect">
+            <div class="ms-control" id="countryControl">
+              <span class="ms-placeholder" id="countryPlaceholder">选择销售国家</span>
+            </div>
+            <div class="ms-panel" id="countryPanel"></div>
+          </div>
+          <span class="field-hint">下拉多选，使用国家二字代码（如 US、CA、GB）</span>
+        </div>
+
+        <div class="form-field">
+          <label class="label">参考型号</label>
+          <input class="input" id="refModelInput" list="refModelList" value="H7087" placeholder="输入关键字模糊搜索参考型号" autocomplete="off" />
+          <datalist id="refModelList">
+            <option value="H7087"></option>
+            <option value="H3500"></option>
+            <option value="H7072"></option>
+            <option value="H3200"></option>
+            <option value="H7045"></option>
+          </datalist>
+          <span class="field-hint">下拉选择，支持模糊搜索</span>
+        </div>
+
+        <div class="form-field">
+          <label class="label">参考说明书</label>
+          <div class="pdf-display" id="refPdfDisplay">
+            <span class="pdf-ico">PDF</span>
+            <span class="pdf-name" id="refPdfName">—</span>
+            <a class="pdf-link" id="refPdfLink" href="#">查看</a>
+          </div>
+          <span class="field-hint">显示所选参考型号对应的说明书 PDF 文件</span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="cancelModalBtn">取消</button>
+        <button class="btn primary" id="createProjectBtn">确认生成项目</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const generateBtn = document.getElementById('generateBtn');
+    const main = document.getElementById('main');
+    const newProjectBtn = document.getElementById('newProjectBtn');
+    const projectModal = document.getElementById('projectModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+    const createProjectBtn = document.getElementById('createProjectBtn');
+    const modelInput = document.getElementById('modelInput');
+    const refModelInput = document.getElementById('refModelInput');
+    const taskTitle = document.getElementById('taskTitle');
+    const taskRef = document.getElementById('taskRef');
+    const adjustInput = document.getElementById('adjustInput');
+    const projects = document.querySelectorAll('.project[data-target]');
+
+    const countrySelect = document.getElementById('countrySelect');
+    const countryControl = document.getElementById('countryControl');
+    const countryPanel = document.getElementById('countryPanel');
+    const refPdfName = document.getElementById('refPdfName');
+    const refPdfLink = document.getElementById('refPdfLink');
+
+    // 国家二字代码（ISO 3166-1 alpha-2）
+    const countryOptions = [
+      ['US', '美国'], ['CA', '加拿大'], ['GB', '英国'], ['DE', '德国'],
+      ['FR', '法国'], ['IT', '意大利'], ['ES', '西班牙'], ['NL', '荷兰'],
+      ['BE', '比利时'], ['JP', '日本'], ['AU', '澳大利亚'], ['MX', '墨西哥']
+    ];
+
+    // 型号默认带出的销售国家
+    const modelCountryMap = {
+      H7087: ['US', 'CA', 'GB', 'DE', 'FR', 'IT', 'ES'],
+      H3500: ['US', 'CA', 'FR'],
+      H7072: ['US', 'CA'],
+      H3200: ['DE', 'GB'],
+      H7045: ['US', 'CA', 'DE', 'FR']
+    };
+
+    // 参考型号对应的终版说明书 PDF
+    const refModelToPdf = {
+      H7087: '807-0003-01450 H7087 五国说明书 V2.0 20250624.pdf',
+      H3500: '807-0003-01430 H3500 英法说明书 V1.0 20250707.pdf',
+      H7072: '807-0003-01309 H7072 英语说明书 V1.0 20250224.pdf',
+      H3200: '807-0003-01288 H3200 英法说明书 V1.0 20250118.pdf',
+      H7045: '807-0003-01360 H7045 五国说明书 V1.2 20250510.pdf'
+    };
+
+    let selectedCountries = [];
+
+    function renderCountryPanel() {
+      countryPanel.innerHTML = '';
+      countryOptions.forEach(([code, name]) => {
+        const opt = document.createElement('label');
+        opt.className = 'ms-option';
+        const checked = selectedCountries.includes(code) ? 'checked' : '';
+        opt.innerHTML = `<input type="checkbox" value="${code}" ${checked}><span class="code">${code}</span><span class="name">${name}</span>`;
+        opt.querySelector('input').addEventListener('change', (e) => {
+          e.stopPropagation();
+          if (e.target.checked) {
+            if (!selectedCountries.includes(code)) selectedCountries.push(code);
+          } else {
+            selectedCountries = selectedCountries.filter((c) => c !== code);
+          }
+          renderCountryControl();
+        });
+        countryPanel.appendChild(opt);
+      });
+    }
+
+    function renderCountryControl() {
+      if (!selectedCountries.length) {
+        countryControl.innerHTML = '<span class="ms-placeholder" id="countryPlaceholder">选择销售国家</span>';
+        return;
+      }
+      countryControl.innerHTML = selectedCountries
+        .map((code) => `<span class="ms-tag" data-code="${code}">${code}<span class="x" data-code="${code}">×</span></span>`)
+        .join('');
+      countryControl.querySelectorAll('.x').forEach((x) => {
+        x.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const code = x.dataset.code;
+          selectedCountries = selectedCountries.filter((c) => c !== code);
+          renderCountryControl();
+          renderCountryPanel();
+        });
+      });
+    }
+
+    function setCountries(codes) {
+      selectedCountries = [...codes];
+      renderCountryControl();
+      renderCountryPanel();
+    }
+
+    countryControl.addEventListener('click', () => {
+      countrySelect.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!countrySelect.contains(e.target)) countrySelect.classList.remove('open');
+    });
+
+    function updateRefPdf() {
+      const pdf = refModelToPdf[refModelInput.value];
+      if (pdf) {
+        refPdfName.textContent = pdf;
+        refPdfName.classList.remove('pdf-empty');
+        refPdfLink.style.display = '';
+        refPdfLink.href = './一轮资料/照明包装+brief(1)/说明书参考/' + encodeURIComponent(pdf);
+      } else {
+        refPdfName.textContent = '未找到对应参考型号的说明书 PDF';
+        refPdfName.classList.add('pdf-empty');
+        refPdfLink.style.display = 'none';
+      }
+    }
+
+    function closeModal() {
+      projectModal.classList.remove('open');
+      countrySelect.classList.remove('open');
+    }
+
+    projects.forEach((project) => {
+      project.addEventListener('click', () => {
+        const target = project.dataset.target;
+        if (target) window.location.href = target;
+      });
+    });
+
+    newProjectBtn.addEventListener('click', () => projectModal.classList.add('open'));
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelModalBtn.addEventListener('click', closeModal);
+
+    modelInput.addEventListener('input', () => {
+      if (modelCountryMap[modelInput.value]) setCountries(modelCountryMap[modelInput.value]);
+    });
+
+    refModelInput.addEventListener('input', updateRefPdf);
+
+    createProjectBtn.addEventListener('click', () => {
+      const model = modelInput.value || '未命名型号';
+      const pdf = refModelToPdf[refModelInput.value] || '未选择';
+      taskTitle.textContent = `${model} 说明书 Brief`;
+      taskRef.textContent = `终版参考：${pdf}`;
+      adjustInput.value = '';
+      main.classList.remove('generating');
+      closeModal();
+    });
+
+    // 初始化
+    setCountries(modelCountryMap[modelInput.value] || []);
+    renderCountryPanel();
+    updateRefPdf();
+
+    generateBtn.addEventListener('click', () => {
+      main.classList.add('generating');
+      generateBtn.textContent = '生成中...';
+      generateBtn.disabled = true;
+
+      window.setTimeout(() => {
+        window.location.href = './认证说明书Brief操作页_已生成_950.html';
+      }, 1800);
+    });
+  </script>
+</body>
+</html>

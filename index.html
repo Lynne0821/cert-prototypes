@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>认证智能体系 · 原型导航</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #0f1830; color: #fff; min-height: 100vh; }
+    .hero { padding: 48px 40px 24px; }
+    .hero h1 { margin: 0 0 8px; font-size: 26px; }
+    .hero p { margin: 0; color: rgba(255,255,255,.6); font-size: 14px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; padding: 24px 40px 48px; max-width: 1200px; }
+    .card { display: block; text-decoration: none; color: inherit; background: linear-gradient(180deg,#1c2745,#161f38); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 20px; transition: .15s; }
+    .card:hover { border-color: #1677ff; transform: translateY(-2px); }
+    .card .tag { display: inline-block; font-size: 12px; color: #4096ff; background: rgba(22,119,255,.12); padding: 2px 8px; border-radius: 4px; margin-bottom: 10px; }
+    .card h3 { margin: 0 0 6px; font-size: 16px; }
+    .card p { margin: 0; font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.6; }
+    .foot { padding: 0 40px 40px; color: rgba(255,255,255,.35); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>认证智能体系 · 原型导航</h1>
+    <p>以下为各模块高保真原型页面，点击进入。页面之间也支持顶部菜单互相跳转。</p>
+  </div>
+  <div class="grid">
+    <a class="card" href="./认证说明书Brief操作页_1920.html"><span class="tag">说明书 Brief</span><h3>说明书 Brief 操作页</h3><p>新增项目、型号/销售国家/参考说明书配置，生成初版说明书 Brief。</p></a>
+    <a class="card" href="./认证说明书Brief操作页_已生成_950.html"><span class="tag">说明书 Brief</span><h3>说明书 Brief（已生成）</h3><p>已生成 Brief 的查看与管理视图。</p></a>
+    <a class="card" href="./受控文件核查页面原型_v2.0_950.html"><span class="tag">受控文件</span><h3>受控文件核查</h3><p>受控文件智能核查、问题清单导出（CSV）。</p></a>
+    <a class="card" href="./草稿报告智能审核原型_v2.0_950.html"><span class="tag">报告审核</span><h3>草稿报告智能审核</h3><p>报告类型筛选、原文预览、整改清单导出。</p></a>
+    <a class="card" href="./认证法规召回监控_950.html"><span class="tag">法规监控</span><h3>认证法规召回监控</h3><p>法规变更与召回信息监控。</p></a>
+    <a class="card" href="./CDF清单页面原型.html"><span class="tag">CDF 清单</span><h3>CDF 清单</h3><p>关键物料认证清单，支持筛选与新增（字段全必填）。</p></a>
+  </div>
+  <div class="foot">原型仅用于演示，数据均为示例。</div>
+</body>
+</html>
