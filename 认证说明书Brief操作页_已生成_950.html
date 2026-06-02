@@ -273,47 +273,174 @@
     .status-warn { color: var(--amber); }
 
     .document-area {
-      padding: 14px 22px;
+      padding: 12px 18px 14px;
       overflow: hidden;
+      height: 100%;
+      min-height: 0;
     }
 
-    .document-toolbar {
-      height: 38px;
+    .split-layout {
+      display: grid;
+      grid-template-columns: minmax(340px, 38fr) minmax(560px, 62fr);
+      gap: 16px;
+      height: 100%;
+      min-height: 0;
+      align-items: stretch;
+    }
+
+    .chat-panel {
+      border: 1px solid #252b3d;
+      border-radius: 8px;
+      background: #0d111d;
+      display: grid;
+      grid-template-rows: 40px 1fr;
+      min-width: 0;
+      max-width: 640px;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .chat-head {
+      border-bottom: 1px solid #252b3d;
+      background: #141827;
+      padding: 0 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 600;
     }
 
-    .tabs {
-      display: flex;
-      gap: 8px;
+    .chat-head span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
     }
 
-    .tab {
-      height: 30px;
-      padding: 0 12px;
+    .chat-list {
+      overflow: auto;
+      padding: 10px 12px 12px;
+    }
+
+    .chat-round {
       border: 1px solid #2a3147;
       border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
       background: #111624;
-      color: #9ba5ba;
-      font-size: 13px;
+      transition: border-color .15s, background .15s;
+    }
+
+    .chat-round:hover {
+      border-color: #3a4560;
+      background: #141b2c;
+    }
+
+    .chat-round.active {
+      border-color: rgba(245,163,0,.55);
+      background: rgba(245,163,0,.08);
+    }
+
+    .chat-round.latest .round-tag {
+      background: rgba(40,199,183,.15);
+      color: var(--teal);
+      border-color: rgba(40,199,183,.35);
+    }
+
+    .round-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .round-tag {
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 6px;
+      border: 1px solid #343b52;
+      background: #1a2030;
+      color: #aeb6c9;
+      font-size: 12px;
+      font-weight: 700;
       display: inline-flex;
       align-items: center;
     }
 
-    .tab.active {
-      color: #f7fbff;
-      border-color: rgba(245,163,0,.55);
-      background: rgba(245,163,0,.12);
+    .round-time {
+      color: #6f7688;
+      font-size: 11px;
     }
 
-    .doc-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      height: calc(100% - 48px);
-      min-height: 600px;
+    .msg {
+      margin-bottom: 8px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .msg:last-child { margin-bottom: 0; }
+
+    .msg.user .role {
+      color: var(--amber);
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .msg.ai .role {
+      color: var(--teal);
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .msg .text { color: #cbd4e6; }
+
+    .round-summary {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #2a3147;
+      font-size: 11px;
+      color: #8b93aa;
+    }
+
+    .brief-panel {
+      min-width: 0;
+      height: 100%;
+    }
+
+    .brief-panel.doc {
+      min-height: 0;
+    }
+
+    .brief-panel .doc-body {
+      padding: 16px 22px 20px;
+    }
+
+    .brief-panel .doc-head {
+      padding: 0 16px;
+      min-height: 44px;
+    }
+
+    .version-badge {
+      height: 24px;
+      padding: 0 10px;
+      border-radius: 6px;
+      border: 1px solid #343b52;
+      background: #1a2030;
+      color: #aeb6c9;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .version-badge.latest {
+      border-color: rgba(40,199,183,.35);
+      background: rgba(40,199,183,.12);
+      color: var(--teal);
     }
 
     .doc {
@@ -394,6 +521,50 @@
       padding-left: 18px;
       margin: 0;
     }
+
+    .doc-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .edit-hint {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .edit-hint.dirty {
+      color: var(--amber);
+    }
+
+    .brief.editing {
+      outline: 1px solid rgba(245,163,0,.35);
+      outline-offset: -1px;
+      background: rgba(245,163,0,.03);
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .toast {
+      position: fixed;
+      top: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.78);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: none;
+      z-index: 200;
+    }
+
+    .toast.show { display: block; }
+
 
     .composer {
       padding: 10px 22px 12px;
@@ -499,64 +670,78 @@
             </div>
           </div>
           <div style="display:flex;gap:8px;">
-            <button class="btn">保存</button>
+            <button class="btn primary" id="saveBriefBtn" disabled>保存</button>
             <button class="btn">导出修改要素Brief</button>
-            <button class="btn primary">导出注释修改稿</button>
           </div>
         </section>
 
         <section class="document-area">
-          <div class="document-toolbar">
-            <div class="tabs">
-              <span class="tab active">并排查看</span>
-              <span class="tab">参考说明书注释修改</span>
-              <span class="tab">修改要素 Brief</span>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn">版本对比</button>
-              <button class="btn">定位终版页</button>
-            </div>
-          </div>
+          <div class="split-layout">
+            <aside class="chat-panel">
+              <div class="chat-head">
+                <strong>多轮修改记录</strong>
+                <span>共 3 个版本</span>
+              </div>
+              <div class="chat-list" id="chatList">
+                <div class="chat-round" data-version="v1">
+                  <div class="round-top">
+                    <span class="round-tag">V1</span>
+                    <span class="round-time">2026-05-28 10:12</span>
+                  </div>
+                  <div class="msg user">
+                    <span class="role">用户</span>
+                    <span class="text">基于 H7094 终版说明书，生成 H7087 五国语言说明书 Brief 初稿。</span>
+                  </div>
+                  <div class="msg ai">
+                    <span class="role">系统</span>
+                    <span class="text">已生成 V1：包含基础信息、规格替换（100-240→200-240）、At a Glance 图示调整说明。</span>
+                  </div>
+                  <div class="round-summary">产出 Brief V1 · 3 项修改总览</div>
+                </div>
+                <div class="chat-round" data-version="v2">
+                  <div class="round-top">
+                    <span class="round-tag">V2</span>
+                    <span class="round-time">2026-05-28 14:36</span>
+                  </div>
+                  <div class="msg user">
+                    <span class="role">用户</span>
+                    <span class="text">补充 ErP 参数占位说明，认证信息页先按 H7094 排版，测试完成后再回填。</span>
+                  </div>
+                  <div class="msg ai">
+                    <span class="role">系统</span>
+                    <span class="text">已更新 V2：在待确认项中增加认证工程师 ERP/HVIN 确认；修改总览追加认证信息章节占位策略。</span>
+                  </div>
+                  <div class="round-summary">产出 Brief V2 · 新增 2 项待确认</div>
+                </div>
+                <div class="chat-round active latest" data-version="v3">
+                  <div class="round-top">
+                    <span class="round-tag">V3 · 最新</span>
+                    <span class="round-time">2026-05-29 09:05</span>
+                  </div>
+                  <div class="msg user">
+                    <span class="role">用户</span>
+                    <span class="text">五国语言认证声明：英语保留指定文案，DE/FR/ES/IT 统一替换为氛围灯合规声明模板。</span>
+                  </div>
+                  <div class="msg ai">
+                    <span class="role">系统</span>
+                    <span class="text">已更新 V3（当前最新）：修改总览细化五国认证文案策略；待确认项补充区域适用性核对。</span>
+                  </div>
+                  <div class="round-summary">产出 Brief V3 · 当前预览版本</div>
+                </div>
+              </div>
+            </aside>
 
-          <div class="doc-grid">
-            <article class="doc">
+            <article class="doc brief-panel">
               <div class="doc-head">
-                <strong>参考说明书注释修改稿</strong>
-                <span style="color:var(--muted);font-size:12px;">设计师执行版</span>
-              </div>
-              <div class="doc-body">
-                <div class="annotation">
-                  <div class="line"><span class="key">页码</span><span class="val">P06</span></div>
-                  <div class="line"><span class="key">章节</span><span class="val">Specifications</span></div>
-                  <div class="line"><span class="key">位置</span><span class="val">Power Input 行</span></div>
-                  <div class="line"><span class="key">操作</span><span class="val">替换</span></div>
-                  <div class="line"><span class="key">原内容</span><span class="val">100-240VAC 50/60Hz</span></div>
-                  <div class="line"><span class="key">修改为</span><span class="val">200-240VAC 50/60Hz</span></div>
-                  <div class="line"><span class="key">适用语种</span><span class="val">EN / DE / FR / ES / IT</span></div>
-                </div>
-                <div class="annotation add">
-                  <div class="line"><span class="key">页码</span><span class="val">P03</span></div>
-                  <div class="line"><span class="key">章节</span><span class="val">At a Glance</span></div>
-                  <div class="line"><span class="key">位置</span><span class="val">图示说明下方</span></div>
-                  <div class="line"><span class="key">操作</span><span class="val">新增</span></div>
-                  <div class="line"><span class="key">内容</span><span class="val">增加光源和适配器标识说明，按五国语言补齐。</span></div>
-                </div>
-                <div class="annotation warn">
-                  <div class="line"><span class="key">页码</span><span class="val">P12</span></div>
-                  <div class="line"><span class="key">章节</span><span class="val">Certification Information</span></div>
-                  <div class="line"><span class="key">位置</span><span class="val">ErP 信息区域</span></div>
-                  <div class="line"><span class="key">操作</span><span class="val">占位待补</span></div>
-                  <div class="line"><span class="key">说明</span><span class="val">先按 H7094 排版，测试完成后回填 ERP 参数。</span></div>
+                <strong>修改要素 Brief 预览</strong>
+                <div class="doc-head-actions">
+                  <span class="edit-hint" id="editHint">可直接编辑正文</span>
+                  <button class="btn" id="cancelEditBtn" disabled>取消修改</button>
+                  <button class="btn primary" id="saveBriefBtnPanel" disabled>保存</button>
+                  <span class="version-badge latest" id="previewVersionBadge">V3 · 最新</span>
                 </div>
               </div>
-            </article>
-
-            <article class="doc">
-              <div class="doc-head">
-                <strong>修改要素 Brief</strong>
-                <span style="color:var(--muted);font-size:12px;">评审归档版</span>
-              </div>
-              <div class="doc-body brief" contenteditable="true">
+              <div class="doc-body brief editing" id="briefPreview" contenteditable="true" spellcheck="false">
                 <h2>H7087 五国语言说明书 Brief</h2>
                 <h4>1. 基础信息</h4>
                 <p>目标型号：H7087；产品线：照明；说明书类型：五国语言；销售区域：US / CA / EU / UK。</p>
@@ -565,12 +750,13 @@
                 <ul>
                   <li>规格参数：Power Input 从 100-240 替换为 200-240。</li>
                   <li>图示要求：At a Glance 改为光源与适配器标识。</li>
-                  <li>认证信息：追加英语指定文案，其他语种替换为对应氛围灯声明。</li>
+                  <li>认证信息：英语保留指定文案；DE / FR / ES / IT 替换为氛围灯合规声明模板。</li>
+                  <li>ErP 信息：先按 H7094 排版占位，测试完成后回填参数。</li>
                 </ul>
                 <h4>3. 待确认项</h4>
                 <ul>
                   <li>硬件PM：确认控制盒外观、图示结构、规格参数。</li>
-                  <li>认证工程师：确认 ERP 参数、HVIN/NIVM、区域适用性。</li>
+                  <li>认证工程师：确认 ERP 参数、HVIN/NIVM、五国区域适用性。</li>
                   <li>评审通过后由硬件PM导出 Brief，并归档锁定终版。</li>
                 </ul>
               </div>
@@ -594,13 +780,154 @@
       </main>
     </div>
   </div>
+  <div class="toast" id="toast"></div>
   <script>
+    const STORAGE_KEY = 'brief_h7087_versions_v1';
+    const latestVersion = 'v3';
+    const versionLabels = { v1: 'V1', v2: 'V2', v3: 'V3' };
+
+    const defaultVersions = {
+      v1: `<h2>H7087 五国语言说明书 Brief</h2>
+        <h4>1. 基础信息</h4>
+        <p>目标型号：H7087；产品线：照明；说明书类型：五国语言；销售区域：US / CA / EU / UK。</p>
+        <p>终版参考：807-0003-01450 五国说明书 V2.0 20250624。</p>
+        <h4>2. 修改总览</h4>
+        <ul>
+          <li>规格参数：Power Input 从 100-240 替换为 200-240。</li>
+          <li>图示要求：At a Glance 改为光源与适配器标识。</li>
+        </ul>
+        <h4>3. 待确认项</h4>
+        <ul>
+          <li>硬件PM：确认控制盒外观、图示结构、规格参数。</li>
+        </ul>`,
+      v2: `<h2>H7087 五国语言说明书 Brief</h2>
+        <h4>1. 基础信息</h4>
+        <p>目标型号：H7087；产品线：照明；说明书类型：五国语言；销售区域：US / CA / EU / UK。</p>
+        <p>终版参考：807-0003-01450 五国说明书 V2.0 20250624。</p>
+        <h4>2. 修改总览</h4>
+        <ul>
+          <li>规格参数：Power Input 从 100-240 替换为 200-240。</li>
+          <li>图示要求：At a Glance 改为光源与适配器标识。</li>
+          <li>认证信息：追加英语指定文案，其他语种替换为对应氛围灯声明。</li>
+          <li>ErP 信息：先按 H7094 排版占位，测试完成后回填参数。</li>
+        </ul>
+        <h4>3. 待确认项</h4>
+        <ul>
+          <li>硬件PM：确认控制盒外观、图示结构、规格参数。</li>
+          <li>认证工程师：确认 ERP 参数、HVIN/NIVM。</li>
+        </ul>`,
+      v3: null
+    };
+
+    const briefPreview = document.getElementById('briefPreview');
+    const previewVersionBadge = document.getElementById('previewVersionBadge');
+    const editHint = document.getElementById('editHint');
+    const toast = document.getElementById('toast');
+    const saveBtns = [
+      document.getElementById('saveBriefBtn'),
+      document.getElementById('saveBriefBtnPanel')
+    ];
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+    defaultVersions.v3 = briefPreview.innerHTML.trim();
+
+    function loadStoredVersions() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { ...defaultVersions };
+        const parsed = JSON.parse(raw);
+        return { v1: parsed.v1 || defaultVersions.v1, v2: parsed.v2 || defaultVersions.v2, v3: parsed.v3 || defaultVersions.v3 };
+      } catch (e) {
+        return { ...defaultVersions };
+      }
+    }
+
+    let briefVersions = loadStoredVersions();
+    let currentVersion = latestVersion;
+    let savedSnapshot = briefVersions[currentVersion];
+    let isDirty = false;
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function updateVersionBadge() {
+      const label = versionLabels[currentVersion];
+      if (currentVersion === latestVersion) {
+        previewVersionBadge.textContent = label + ' · 最新';
+        previewVersionBadge.classList.add('latest');
+      } else {
+        previewVersionBadge.textContent = label + ' · 预览';
+        previewVersionBadge.classList.remove('latest');
+      }
+    }
+
+    function setDirty(dirty) {
+      isDirty = dirty;
+      editHint.textContent = dirty ? '有未保存的修改' : '可直接编辑正文';
+      editHint.classList.toggle('dirty', dirty);
+      saveBtns.forEach((btn) => { if (btn) btn.disabled = !dirty; });
+      if (cancelEditBtn) cancelEditBtn.disabled = !dirty;
+    }
+
+    function loadVersion(version) {
+      currentVersion = version;
+      briefPreview.innerHTML = briefVersions[version];
+      savedSnapshot = briefVersions[version];
+      setDirty(false);
+      updateVersionBadge();
+      document.querySelectorAll('.chat-round').forEach((el) => {
+        el.classList.toggle('active', el.dataset.version === version);
+      });
+    }
+
+    function switchVersion(version) {
+      if (version === currentVersion) return;
+      if (isDirty && !confirm('当前版本有未保存修改，切换版本将丢失修改，是否继续？')) return;
+      loadVersion(version);
+    }
+
+    function saveCurrentBrief() {
+      const html = briefPreview.innerHTML.trim();
+      briefVersions[currentVersion] = html;
+      savedSnapshot = html;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(briefVersions));
+      } catch (e) { /* prototype */ }
+      setDirty(false);
+      const label = versionLabels[currentVersion];
+      showToast('已保存 ' + label + ' 修改要素 Brief');
+    }
+
+    function cancelEdit() {
+      briefPreview.innerHTML = savedSnapshot;
+      setDirty(false);
+      showToast('已恢复为上次保存内容');
+    }
+
+    briefPreview.addEventListener('input', () => {
+      const changed = briefPreview.innerHTML.trim() !== savedSnapshot.trim();
+      setDirty(changed);
+    });
+
+    saveBtns.forEach((btn) => btn && btn.addEventListener('click', saveCurrentBrief));
+    cancelEditBtn && cancelEditBtn.addEventListener('click', cancelEdit);
+
     document.querySelectorAll('.project[data-target]').forEach((project) => {
       project.addEventListener('click', () => {
+        if (isDirty && !confirm('有未保存修改，确定离开当前项目？')) return;
         const target = project.dataset.target;
         if (target) window.location.href = target;
       });
     });
+
+    document.querySelectorAll('.chat-round').forEach((round) => {
+      round.addEventListener('click', () => switchVersion(round.dataset.version));
+    });
+
+    loadVersion(latestVersion);
   </script>
 </body>
 </html>
