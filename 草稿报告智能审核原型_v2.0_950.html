@@ -149,20 +149,20 @@
         <button class="btn primary" id="newReportBtn" style="width:100%;">+ 新增报告审核</button>
         <input class="search" placeholder="搜索报告 / 型号 / 实验室..." />
         <div class="date-title">今天</div>
-        <div class="record active" data-name="H6056-CE-RED-Anbotek-Report-BLE.pdf" data-total="6" data-block="2" data-risk="4" data-fp="0">
+        <div class="record active" data-name="H6056-CE-RED-Anbotek-Report-BLE.pdf" data-total="6" data-block="2" data-critical="0" data-risk="3" data-info="1" data-fp="0">
           H6056 CE-RED BLE
-          <span class="sub"><span>14:28</span><span class="badge danger">2 阻断</span></span>
+          <span class="sub"><span>14:28</span><span class="badge danger">2 阻塞</span></span>
         </div>
-        <div class="record" data-name="H7087-FCC-SDoC-Draft.pdf" data-total="3" data-block="1" data-risk="2" data-fp="0">
+        <div class="record" data-name="H7087-FCC-SDoC-Draft.pdf" data-total="3" data-block="1" data-critical="0" data-risk="1" data-info="1" data-fp="0">
           H7087 FCC SDoC
           <span class="sub"><span>10:11</span><span class="badge warn">3 问题</span></span>
         </div>
         <div class="date-title">本周</div>
-        <div class="record" data-name="H3500-EMC-Test-Report.pdf" data-total="0" data-block="0" data-risk="0" data-fp="0">
+        <div class="record" data-name="H3500-EMC-Test-Report.pdf" data-total="0" data-block="0" data-critical="0" data-risk="0" data-info="0" data-fp="0">
           H3500 EMC Report
           <span class="sub"><span>周二</span><span class="badge ok">通过</span></span>
         </div>
-        <div class="record" data-name="A14C0-CE-LVD-Draft.pdf" data-total="5" data-block="1" data-risk="4" data-fp="0">
+        <div class="record" data-name="A14C0-CE-LVD-Draft.pdf" data-total="5" data-block="1" data-critical="1" data-risk="2" data-info="1" data-fp="0">
           A14C0 CE-LVD
           <span class="sub"><span>周一</span><span class="badge warn">5 问题</span></span>
         </div>
@@ -234,10 +234,10 @@
             <div class="panel-head"><strong>审核结果</strong><span style="color:var(--muted);font-size:12px;">按报告文件查看问题</span></div>
             <div class="panel-body">
               <div class="summary-grid">
-                <div class="summary-card"><span>问题总数</span><strong id="totalText">6</strong></div>
-                <div class="summary-card"><span>阻断</span><strong style="color:var(--red);" id="blockText">2</strong></div>
-                <div class="summary-card"><span>风险</span><strong style="color:var(--amber);" id="riskText">4</strong></div>
-                <div class="summary-card"><span>忽略</span><strong style="color:var(--muted);" id="fpText">0</strong></div>
+                <div class="summary-card"><span>阻塞</span><strong style="color:var(--red);" id="blockText">2</strong></div>
+                <div class="summary-card"><span>严重</span><strong style="color:#d9363e;" id="criticalText">0</strong></div>
+                <div class="summary-card"><span>风险</span><strong style="color:var(--amber);" id="riskText">3</strong></div>
+                <div class="summary-card"><span>信息</span><strong style="color:var(--blue);" id="infoText">1</strong></div>
               </div>
               <div class="result-filter">
                 <span class="result-filter-label">报告类型</span>
@@ -250,7 +250,7 @@
               </div>
               <div class="issue-list" id="issueList">
                 <article class="issue-card danger" data-type="appendix" data-page="P12" data-keyword="31.20 dBm">
-                  <div class="issue-title"><span>R001 数据与结论不一致</span><span class="badge danger">阻断</span></div>
+                  <div class="issue-title"><span>R001 数据与结论不一致</span><span class="badge danger">阻塞</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P12 · 31.20 dBm / PASS</span><span class="key">建议</span><span class="val">要求实验室复核测试数据、限值和 Verdict。</span></div>
                   <p>实测值 31.20 dBm 高于 30 dBm 限值，但结论仍为 PASS。</p>
                   <div class="mini-actions"><button class="mini btn-fp">标记为忽略</button></div>
@@ -262,7 +262,7 @@
                                     <div class="mini-actions"><button class="mini btn-fp">标记为忽略</button></div>
                 </article>
                 <article class="issue-card blue" data-type="ce-red" data-page="P01" data-keyword="Rating">
-                  <div class="issue-title"><span>F003 Rating 与产品信息需核对</span><span class="badge blue">字段</span></div>
+                  <div class="issue-title"><span>F003 Rating 与产品信息需核对</span><span class="badge blue">信息</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P01 · Rating</span><span class="key">建议</span><span class="val">与 PIM 额定输入参数核对。</span></div>
                   <p>报告 Rating 字段已识别，但需要人工确认与产品信息库一致。</p>
                   <div class="mini-actions"><button class="mini btn-fp">标记为忽略</button></div>
@@ -326,9 +326,9 @@
         <div class="form-field"><label class="label">导出文件名</label><input class="input" value="H6056_CE_RED_实验室整改清单.xlsx" /></div>
         <div class="template-preview">
           <div class="template-row head"><div class="template-cell">问题编号</div><div class="template-cell">级别</div><div class="template-cell">认证类型</div><div class="template-cell">原始文件名</div><div class="template-cell">页面定位</div><div class="template-cell">证据原文</div><div class="template-cell">整改建议</div></div>
-          <div class="template-row"><div class="template-cell">R001</div><div class="template-cell">阻断</div><div class="template-cell">CE-RED</div><div class="template-cell">H6056-CE-RED-Anbotek-Report-BLE.pdf</div><div class="template-cell">P12</div><div class="template-cell">31.20 dBm / PASS</div><div class="template-cell">复核测试数据、限值和 Verdict。</div></div>
+          <div class="template-row"><div class="template-cell">R001</div><div class="template-cell">阻塞</div><div class="template-cell">CE-RED</div><div class="template-cell">H6056-CE-RED-Anbotek-Report-BLE.pdf</div><div class="template-cell">P12</div><div class="template-cell">31.20 dBm / PASS</div><div class="template-cell">复核测试数据、限值和 Verdict。</div></div>
           <div class="template-row"><div class="template-cell">R010</div><div class="template-cell">风险</div><div class="template-cell">CE-RED</div><div class="template-cell">H6056-CE-RED-Anbotek-Report-BLE.pdf</div><div class="template-cell">P01</div><div class="template-cell">2026-02-xx</div><div class="template-cell">补全准确报告日期。</div></div>
-          <div class="template-row"><div class="template-cell">F003</div><div class="template-cell">字段</div><div class="template-cell">CE-RED</div><div class="template-cell">H6056-CE-RED-Anbotek-Report-BLE.pdf</div><div class="template-cell">P01</div><div class="template-cell">Rating</div><div class="template-cell">与 PIM 额定输入参数核对。</div></div>
+          <div class="template-row"><div class="template-cell">F003</div><div class="template-cell">信息</div><div class="template-cell">CE-RED</div><div class="template-cell">H6056-CE-RED-Anbotek-Report-BLE.pdf</div><div class="template-cell">P01</div><div class="template-cell">Rating</div><div class="template-cell">与 PIM 额定输入参数核对。</div></div>
         </div>
       </div>
       <div class="modal-actions"><button class="btn" id="cancelExportModalBtn">取消</button><button class="btn primary" id="downloadExportBtn">下载整改清单</button></div>
@@ -339,22 +339,23 @@
   <script>
     const records = document.querySelectorAll('.record');
     const taskTitle = document.getElementById('taskTitle');
-    const totalText = document.getElementById('totalText');
     const blockText = document.getElementById('blockText');
+    const criticalText = document.getElementById('criticalText');
     const riskText = document.getElementById('riskText');
+    const infoText = document.getElementById('infoText');
     
     
     function updateGlobalCounts() {
       const allCards = Array.from(document.querySelectorAll('.issue-card'));
-      const total = allCards.length;
-      const fps = allCards.filter(c => c.querySelector('.fp-text')).length;
-      const blocks = allCards.filter(c => !c.querySelector('.fp-text') && c.querySelector('.badge') && c.querySelector('.badge').textContent.includes('阻断')).length;
+      const blocks = allCards.filter(c => !c.querySelector('.fp-text') && c.querySelector('.badge') && c.querySelector('.badge').textContent.includes('阻塞')).length;
+      const criticals = allCards.filter(c => !c.querySelector('.fp-text') && c.querySelector('.badge') && c.querySelector('.badge').textContent.includes('严重')).length;
       const risks = allCards.filter(c => !c.querySelector('.fp-text') && c.querySelector('.badge') && c.querySelector('.badge').textContent.includes('风险')).length;
+      const infos = allCards.filter(c => !c.querySelector('.fp-text') && c.querySelector('.badge') && c.querySelector('.badge').textContent.includes('信息')).length;
       
-      document.getElementById('totalText').textContent = total;
-      document.getElementById('blockText').textContent = blocks;
-      document.getElementById('riskText').textContent = risks;
-      document.getElementById('fpText').textContent = fps;
+      if(document.getElementById('blockText')) document.getElementById('blockText').textContent = blocks;
+      if(document.getElementById('criticalText')) document.getElementById('criticalText').textContent = criticals;
+      if(document.getElementById('riskText')) document.getElementById('riskText').textContent = risks;
+      if(document.getElementById('infoText')) document.getElementById('infoText').textContent = infos;
     }
 
     // FP Modal logic
@@ -448,11 +449,10 @@
       records.forEach((item) => item.classList.remove('active'));
       record.classList.add('active');
       taskTitle.textContent = record.dataset.name;
-      totalText.textContent = record.dataset.total;
-      blockText.textContent = record.dataset.block;
-      riskText.textContent = record.dataset.risk;
-      const fpEl = document.getElementById('fpText');
-      if(fpEl) fpEl.textContent = record.dataset.fp || "0";
+      if(blockText) blockText.textContent = record.dataset.block || "0";
+      if(criticalText) criticalText.textContent = record.dataset.critical || "0";
+      if(riskText) riskText.textContent = record.dataset.risk || "0";
+      if(infoText) infoText.textContent = record.dataset.info || "0";
     }));
 
     issueCards.forEach((card) => card.addEventListener('click', () => locateIssue(card)));
