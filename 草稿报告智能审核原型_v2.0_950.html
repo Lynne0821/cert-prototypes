@@ -237,7 +237,7 @@
                 <div class="summary-card"><span>问题总数</span><strong id="totalText">6</strong></div>
                 <div class="summary-card"><span>阻断</span><strong style="color:var(--red);" id="blockText">2</strong></div>
                 <div class="summary-card"><span>风险</span><strong style="color:var(--amber);" id="riskText">4</strong></div>
-                <div class="summary-card"><span>误报</span><strong style="color:var(--muted);" id="fpText">0</strong></div>
+                <div class="summary-card"><span>忽略</span><strong style="color:var(--muted);" id="fpText">0</strong></div>
               </div>
               <div class="result-filter">
                 <span class="result-filter-label">报告类型</span>
@@ -253,32 +253,32 @@
                   <div class="issue-title"><span>R001 数据与结论不一致</span><span class="badge danger">阻断</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P12 · 31.20 dBm / PASS</span><span class="key">建议</span><span class="val">要求实验室复核测试数据、限值和 Verdict。</span></div>
                   <p>实测值 31.20 dBm 高于 30 dBm 限值，但结论仍为 PASS。</p>
-                  <div class="mini-actions"><button class="mini btn-fp">标记为误报</button></div>
+                  <div class="mini-actions"><button class="mini btn-fp">标记为忽略</button></div>
                 </article>
                 <article class="issue-card" data-type="ce-red" data-page="P01" data-keyword="2026-02-xx">
                   <div class="issue-title"><span>R010 报告日期仍为占位符</span><span class="badge warn">风险</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P01 · Report Date</span><span class="key">建议</span><span class="val">正式报告前补全准确日期。</span></div>
                   <p>封面中出现 2026-02-xx，占位符未替换。</p>
-                                    <div class="mini-actions"><button class="mini btn-fp">标记为误报</button></div>
+                                    <div class="mini-actions"><button class="mini btn-fp">标记为忽略</button></div>
                 </article>
                 <article class="issue-card blue" data-type="ce-red" data-page="P01" data-keyword="Rating">
                   <div class="issue-title"><span>F003 Rating 与产品信息需核对</span><span class="badge blue">字段</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P01 · Rating</span><span class="key">建议</span><span class="val">与 PIM 额定输入参数核对。</span></div>
                   <p>报告 Rating 字段已识别，但需要人工确认与产品信息库一致。</p>
-                  <div class="mini-actions"><button class="mini btn-fp">标记为误报</button></div>
+                  <div class="mini-actions"><button class="mini btn-fp">标记为忽略</button></div>
                 </article>
 
                 <article class="issue-card" data-type="fcc-sdoc" data-page="P04" data-keyword="Supplier Declaration">
                   <div class="issue-title"><span>F011 FCC SDoC 声明待确认</span><span class="badge warn">风险</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P04 · Supplier Declaration</span><span class="key">建议</span><span class="val">确认供应商符合性声明主体、地址和责任方信息。</span></div>
                   <p>FCC SDoC 报告中声明段落仍为待确认状态，需要由审核程序按报告类型识别并提示。</p>
-                  <div class="mini-actions"><button class="mini btn-fp">标记为误报</button></div>
+                  <div class="mini-actions"><button class="mini btn-fp">标记为忽略</button></div>
                 </article>
                 <article class="issue-card" data-type="appendix" data-page="P12" data-keyword="Setup Photo">
                   <div class="issue-title"><span>R009 图表与照片完整性需人工复核</span><span class="badge warn">风险</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P12 · Setup Photo</span><span class="key">建议</span><span class="val">确认测试照片和测试模式数量一致。</span></div>
                   <p>系统可识别标题，但图片中的数值暂不自动判读。</p>
-                  <div class="mini-actions"><button class="mini btn-fp">标记为误报</button></div>
+                  <div class="mini-actions"><button class="mini btn-fp">标记为忽略</button></div>
                 </article>
               </div>
             </div>
@@ -291,7 +291,7 @@
   
   <div class="modal-mask" id="fpModal">
     <div class="modal">
-      <div class="modal-head"><span>标记为误报</span><button class="btn icon" id="closeFpModalBtn">×</button></div>
+      <div class="modal-head"><span>标记为忽略</span><button class="btn icon" id="closeFpModalBtn">×</button></div>
       <div class="modal-body">
         <div class="form-field"><label class="label">备注原因 <span style="color:var(--red);">*</span></label><textarea class="input" id="fpReasonInput" style="height:80px;resize:vertical;" placeholder="请填写具体备注原因..."></textarea></div>
       </div>
@@ -393,14 +393,14 @@
           fpText.style.marginTop = '8px';
           currentFpCard.appendChild(fpText);
         }
-        fpText.innerText = '已标记误报: ' + reason;
+        fpText.innerText = '已标记忽略: ' + reason;
         
         const actions = currentFpCard.querySelector('.mini-actions');
         if(actions) actions.style.display = 'none';
         
         // update top counts
         let badge = currentFpCard.querySelector('.badge');
-        if(badge) badge.textContent = '误报';
+        if(badge) badge.textContent = '忽略';
       }
       fpModal.classList.remove('open');
       updateGlobalCounts();
