@@ -173,7 +173,7 @@
           <div>
             <div class="task-title"><span class="dot"></span><span id="taskTitle">H6056-CE-RED-Anbotek-Report-BLE.pdf</span></div>
           </div>
-          <div style="display:flex;gap:8px;"><button class="btn ghost" id="saveReviewBtn">保存审核记录</button><button class="btn ghost" id="exportBtn">导出整改清单</button><button class="btn primary" id="updateReportBtn">更新报告文件</button></div>
+          <div style="display:flex;gap:8px;"><button class="btn ghost" id="exportBtn">导出整改清单</button><button class="btn primary" id="updateReportBtn">更新报告文件</button></div>
         </section>
 
         <section class="content">
@@ -458,7 +458,6 @@
     document.getElementById('newReportBtn').addEventListener('click', () => newReportModal.classList.add('open'));
     document.getElementById('updateReportBtn').addEventListener('click', () => updateModal.classList.add('open'));
     document.getElementById('exportBtn').addEventListener('click', () => exportModal.classList.add('open'));
-    document.getElementById('saveReviewBtn').addEventListener('click', (e) => flashButton(e.currentTarget, '已保存'));
     document.getElementById('uploadBtn').addEventListener('click', () => document.getElementById('fileInput').click());
     document.getElementById('updateUploadBtn').addEventListener('click', () => document.getElementById('updateFileInput').click());
     document.getElementById('fileInput').addEventListener('change', (e) => { const file = e.target.files[0]; if (file) document.getElementById('fileNameText').textContent = file.name; });
