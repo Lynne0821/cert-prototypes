@@ -68,7 +68,7 @@
     .test-table th { background: #f1f5f9; }
     mark.issue { border-radius: 4px; padding: 1px 3px; color: inherit; background: rgba(245,163,0,.32); outline: 2px solid transparent; transition: outline-color .2s, background .2s; }
     mark.issue.active { background: rgba(240,109,124,.34); outline-color: rgba(240,109,124,.85); }
-    .summary-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 12px; }
     .summary-card { border: 1px solid #273047; border-radius: 8px; background: #111624; padding: 10px; min-height: 68px; }
     .summary-card span { display: block; color: #818ba1; font-size: 12px; margin-bottom: 7px; }
     .summary-card strong { color: #f2f5fb; font-size: 20px; }
@@ -149,20 +149,20 @@
         <button class="btn primary" id="newReportBtn" style="width:100%;">+ 新增报告审核</button>
         <input class="search" placeholder="搜索报告 / 型号 / 实验室..." />
         <div class="date-title">今天</div>
-        <div class="record active" data-name="H6056-CE-RED-Anbotek-Report-BLE.pdf" data-total="6" data-block="2" data-risk="4">
+        <div class="record active" data-name="H6056-CE-RED-Anbotek-Report-BLE.pdf" data-total="6" data-block="2" data-risk="4" data-fp="0">
           H6056 CE-RED BLE
           <span class="sub"><span>14:28</span><span class="badge danger">2 阻断</span></span>
         </div>
-        <div class="record" data-name="H7087-FCC-SDoC-Draft.pdf" data-total="3" data-block="1" data-risk="2">
+        <div class="record" data-name="H7087-FCC-SDoC-Draft.pdf" data-total="3" data-block="1" data-risk="2" data-fp="0">
           H7087 FCC SDoC
           <span class="sub"><span>10:11</span><span class="badge warn">3 问题</span></span>
         </div>
         <div class="date-title">本周</div>
-        <div class="record" data-name="H3500-EMC-Test-Report.pdf" data-total="0" data-block="0" data-risk="0">
+        <div class="record" data-name="H3500-EMC-Test-Report.pdf" data-total="0" data-block="0" data-risk="0" data-fp="0">
           H3500 EMC Report
           <span class="sub"><span>周二</span><span class="badge ok">通过</span></span>
         </div>
-        <div class="record" data-name="A14C0-CE-LVD-Draft.pdf" data-total="5" data-block="1" data-risk="4">
+        <div class="record" data-name="A14C0-CE-LVD-Draft.pdf" data-total="5" data-block="1" data-risk="4" data-fp="0">
           A14C0 CE-LVD
           <span class="sub"><span>周一</span><span class="badge warn">5 问题</span></span>
         </div>
@@ -237,6 +237,7 @@
                 <div class="summary-card"><span>问题总数</span><strong id="totalText">6</strong></div>
                 <div class="summary-card"><span>阻断</span><strong style="color:var(--red);" id="blockText">2</strong></div>
                 <div class="summary-card"><span>风险</span><strong style="color:var(--amber);" id="riskText">4</strong></div>
+                <div class="summary-card"><span>误报</span><strong style="color:var(--muted);" id="fpText">0</strong></div>
               </div>
               <div class="result-filter">
                 <span class="result-filter-label">报告类型</span>
@@ -342,6 +343,20 @@
     const blockText = document.getElementById('blockText');
     const riskText = document.getElementById('riskText');
     
+    
+    function updateGlobalCounts() {
+      const allCards = Array.from(document.querySelectorAll('.issue-card'));
+      const total = allCards.length;
+      const fps = allCards.filter(c => c.querySelector('.fp-text')).length;
+      const blocks = allCards.filter(c => !c.querySelector('.fp-text') && c.querySelector('.badge') && c.querySelector('.badge').textContent.includes('阻断')).length;
+      const risks = allCards.filter(c => !c.querySelector('.fp-text') && c.querySelector('.badge') && c.querySelector('.badge').textContent.includes('风险')).length;
+      
+      document.getElementById('totalText').textContent = total;
+      document.getElementById('blockText').textContent = blocks;
+      document.getElementById('riskText').textContent = risks;
+      document.getElementById('fpText').textContent = fps;
+    }
+
     // FP Modal logic
     const fpModal = document.getElementById('fpModal');
     const fpReasonInput = document.getElementById('fpReasonInput');
@@ -388,6 +403,7 @@
         if(badge) badge.textContent = '误报';
       }
       fpModal.classList.remove('open');
+      updateGlobalCounts();
     });
 
     const issueCards = document.querySelectorAll('.issue-card');
@@ -435,6 +451,8 @@
       totalText.textContent = record.dataset.total;
       blockText.textContent = record.dataset.block;
       riskText.textContent = record.dataset.risk;
+      const fpEl = document.getElementById('fpText');
+      if(fpEl) fpEl.textContent = record.dataset.fp || "0";
     }));
 
     issueCards.forEach((card) => card.addEventListener('click', () => locateIssue(card)));
