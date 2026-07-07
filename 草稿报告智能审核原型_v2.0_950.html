@@ -293,7 +293,7 @@
     <div class="modal">
       <div class="modal-head"><span>标记为忽略</span><button class="btn icon" id="closeFpModalBtn">×</button></div>
       <div class="modal-body">
-        <div class="form-field"><label class="label">备注原因 <span style="color:var(--red);">*</span></label><textarea class="input" id="fpReasonInput" style="height:80px;resize:vertical;" placeholder="请填写具体备注原因..."></textarea></div>
+        <div class="form-field"><label class="label">备注原因 <span id="fpRequiredStar" style="color:var(--red);">*</span></label><textarea class="input" id="fpReasonInput" style="height:80px;resize:vertical;" placeholder="请填写具体备注原因..."></textarea></div>
       </div>
       <div class="modal-actions"><button class="btn" id="cancelFpModalBtn">取消</button><button class="btn primary" id="confirmFpBtn">确认标记</button></div>
     </div>
@@ -367,6 +367,21 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         currentFpCard = e.target.closest('.issue-card');
+        
+        let isRequired = false;
+        const badge = currentFpCard.querySelector('.badge');
+        if (badge) {
+          const text = badge.textContent;
+          if (text.includes('阻塞') || text.includes('严重')) {
+            isRequired = true;
+          }
+        }
+        currentFpCard.dataset.fpReq = isRequired ? "1" : "0";
+        
+        const star = document.getElementById('fpRequiredStar');
+        if (star) star.style.display = isRequired ? 'inline' : 'none';
+        fpReasonInput.placeholder = isRequired ? '请填写具体备注原因（必填）...' : '请填写具体备注原因（选填）...';
+        
         fpReasonInput.value = '';
         fpModal.classList.add('open');
       });
@@ -376,8 +391,9 @@
     document.getElementById('cancelFpModalBtn').addEventListener('click', () => fpModal.classList.remove('open'));
     document.getElementById('confirmFpBtn').addEventListener('click', () => {
       const reason = fpReasonInput.value.trim();
-      if(!reason) {
-        alert('请填写具体备注原因');
+      const isRequired = currentFpCard && currentFpCard.dataset.fpReq === "1";
+      if(isRequired && !reason) {
+        alert('阻塞和严重类型的忽略，请填写具体备注原因');
         return;
       }
       if (currentFpCard) {
@@ -394,7 +410,7 @@
           fpText.style.marginTop = '8px';
           currentFpCard.appendChild(fpText);
         }
-        fpText.innerText = '已标记忽略: ' + reason;
+        fpText.innerText = reason ? '已标记忽略: ' + reason : '已标记忽略';
         
         const actions = currentFpCard.querySelector('.mini-actions');
         if(actions) actions.style.display = 'none';
