@@ -139,6 +139,7 @@
         <a class="menu-item active" href="./草稿报告智能审核原型_v2.0_950.html">报告智能审核</a>
         <a class="menu-item" href="./认证法规召回监控_950.html">法规召回监控</a>
         <a class="menu-item" href="./CDF清单页面原型.html">CDF清单</a>
+        <a class="menu-item" href="./认证标准清单页面原型.html">认证标准清单</a>
       </nav>
       <div class="top-actions"><span>☼</span><span>↗</span><div class="avatar">王</div></div>
     </header>
@@ -251,34 +252,49 @@
                   <div class="issue-title"><span>R001 数据与结论不一致</span><span class="badge danger">阻断</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P12 · 31.20 dBm / PASS</span><span class="key">建议</span><span class="val">要求实验室复核测试数据、限值和 Verdict。</span></div>
                   <p>实测值 31.20 dBm 高于 30 dBm 限值，但结论仍为 PASS。</p>
+                  <div class="mini-actions"><button class="mini btn-fp">标记为误报</button></div>
                 </article>
                 <article class="issue-card" data-type="ce-red" data-page="P01" data-keyword="2026-02-xx">
                   <div class="issue-title"><span>R010 报告日期仍为占位符</span><span class="badge warn">风险</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P01 · Report Date</span><span class="key">建议</span><span class="val">正式报告前补全准确日期。</span></div>
                   <p>封面中出现 2026-02-xx，占位符未替换。</p>
-                  <div class="mini-actions"><button class="mini">加入整改</button><button class="mini">忽略</button></div>
+                                    <div class="mini-actions"><button class="mini btn-fp">标记为误报</button></div>
                 </article>
                 <article class="issue-card blue" data-type="ce-red" data-page="P01" data-keyword="Rating">
                   <div class="issue-title"><span>F003 Rating 与产品信息需核对</span><span class="badge blue">字段</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P01 · Rating</span><span class="key">建议</span><span class="val">与 PIM 额定输入参数核对。</span></div>
                   <p>报告 Rating 字段已识别，但需要人工确认与产品信息库一致。</p>
+                  <div class="mini-actions"><button class="mini btn-fp">标记为误报</button></div>
                 </article>
 
                 <article class="issue-card" data-type="fcc-sdoc" data-page="P04" data-keyword="Supplier Declaration">
                   <div class="issue-title"><span>F011 FCC SDoC 声明待确认</span><span class="badge warn">风险</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P04 · Supplier Declaration</span><span class="key">建议</span><span class="val">确认供应商符合性声明主体、地址和责任方信息。</span></div>
                   <p>FCC SDoC 报告中声明段落仍为待确认状态，需要由审核程序按报告类型识别并提示。</p>
+                  <div class="mini-actions"><button class="mini btn-fp">标记为误报</button></div>
                 </article>
                 <article class="issue-card" data-type="appendix" data-page="P12" data-keyword="Setup Photo">
                   <div class="issue-title"><span>R009 图表与照片完整性需人工复核</span><span class="badge warn">风险</span></div>
                   <div class="issue-meta"><span class="key">定位</span><span class="val">P12 · Setup Photo</span><span class="key">建议</span><span class="val">确认测试照片和测试模式数量一致。</span></div>
                   <p>系统可识别标题，但图片中的数值暂不自动判读。</p>
+                  <div class="mini-actions"><button class="mini btn-fp">标记为误报</button></div>
                 </article>
               </div>
             </div>
           </aside>
         </section>
       </main>
+    </div>
+  </div>
+
+  
+  <div class="modal-mask" id="fpModal">
+    <div class="modal">
+      <div class="modal-head"><span>标记为误报</span><button class="btn icon" id="closeFpModalBtn">×</button></div>
+      <div class="modal-body">
+        <div class="form-field"><label class="label">备注原因 <span style="color:var(--red);">*</span></label><textarea class="input" id="fpReasonInput" style="height:80px;resize:vertical;" placeholder="请填写具体备注原因..."></textarea></div>
+      </div>
+      <div class="modal-actions"><button class="btn" id="cancelFpModalBtn">取消</button><button class="btn primary" id="confirmFpBtn">确认标记</button></div>
     </div>
   </div>
 
@@ -325,6 +341,55 @@
     const totalText = document.getElementById('totalText');
     const blockText = document.getElementById('blockText');
     const riskText = document.getElementById('riskText');
+    
+    // FP Modal logic
+    const fpModal = document.getElementById('fpModal');
+    const fpReasonInput = document.getElementById('fpReasonInput');
+    let currentFpCard = null;
+
+    document.querySelectorAll('.btn-fp').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentFpCard = e.target.closest('.issue-card');
+        fpReasonInput.value = '';
+        fpModal.classList.add('open');
+      });
+    });
+
+    document.getElementById('closeFpModalBtn').addEventListener('click', () => fpModal.classList.remove('open'));
+    document.getElementById('cancelFpModalBtn').addEventListener('click', () => fpModal.classList.remove('open'));
+    document.getElementById('confirmFpBtn').addEventListener('click', () => {
+      const reason = fpReasonInput.value.trim();
+      if(!reason) {
+        alert('请填写具体备注原因');
+        return;
+      }
+      if (currentFpCard) {
+        // Change badge or style to indicate it's a false positive
+        currentFpCard.style.opacity = '0.6';
+        currentFpCard.style.pointerEvents = 'none';
+        
+        let fpText = currentFpCard.querySelector('.fp-text');
+        if (!fpText) {
+          fpText = document.createElement('div');
+          fpText.className = 'fp-text';
+          fpText.style.color = 'var(--amber)';
+          fpText.style.fontSize = '12px';
+          fpText.style.marginTop = '8px';
+          currentFpCard.appendChild(fpText);
+        }
+        fpText.innerText = '已标记误报: ' + reason;
+        
+        const actions = currentFpCard.querySelector('.mini-actions');
+        if(actions) actions.style.display = 'none';
+        
+        // update top counts
+        let badge = currentFpCard.querySelector('.badge');
+        if(badge) badge.textContent = '误报';
+      }
+      fpModal.classList.remove('open');
+    });
+
     const issueCards = document.querySelectorAll('.issue-card');
     const reportTypeSelect = document.getElementById('reportTypeSelect');
     const fileTabs = document.querySelectorAll('.file-tab');
